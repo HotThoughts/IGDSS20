@@ -8,15 +8,15 @@ public class GameManager : MonoBehaviour
     public int dim;
 
     // Prefabs
-    public Object waterTile;
-    public Object sandTile;
-    public Object grassTile;
-    public Object forestTile;
-    public Object stoneTile;
-    public Object mountainTile;
+    public GameObject waterTile;
+    public GameObject sandTile;
+    public GameObject grassTile;
+    public GameObject forestTile;
+    public GameObject stoneTile;
+    public GameObject mountainTile;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         dim = heightMap.width;
 

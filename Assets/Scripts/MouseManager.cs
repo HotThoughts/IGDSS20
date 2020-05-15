@@ -4,41 +4,49 @@ using UnityEngine;
 
 public class MouseManager : MonoBehaviour
 {
-
     public float scrollSpeed = 10f;
-    public float panSpeed = 0.1f;
-    public Vector3 panLimit;
-
-    public float minY = 0f;
-    public float maxY = 100f;
+    private float maxY = 85f;
+    private float minY = 25f;
+    public float panSpeed;
+    public Bounds bounds;
     public Camera cam;
     private Vector3 prev_pos;
     // Start is called before the first frame update
     void Start()
     {
         cam = Camera.main;
+
+        // Determine scene bounds
+        var rnds = FindObjectsOfType<Renderer>();
+        if (rnds.Length == 0)
+            return; // nothing to see here, go on
+
+        var b = rnds[0].bounds;
+        for (int i = 1; i < rnds.Length; i++)
+            b.Encapsulate(rnds[i].bounds);
+        this.bounds = b;
     }
 
     // Update is called once per frame
     void Update()
     {
-        // right botton
+        // right button
         if (Input.GetMouseButtonDown(1))
             prev_pos = cam.ScreenToViewportPoint(Input.mousePosition);
-        if(Input.GetMouseButton(1)){ 
+        if(Input.GetMouseButton(1)){
             // move the mouse pans the camera on X-Z plane
             Vector3 direction = prev_pos - cam.ScreenToViewportPoint(Input.mousePosition);
             Vector3 pos = cam.transform.position;
-            pos.x -= direction.x * panSpeed;
-            pos.z -= direction.y * panSpeed;
+            pos.x += direction.y * panSpeed;
+            pos.z -= direction.x * panSpeed;
             // boundaries
-            pos.x = Mathf.Clamp(pos.x, -panLimit.x, panLimit.x);
-            pos.z = Mathf.Clamp(pos.z, -panLimit.y, panLimit.y);
+            pos.x = Mathf.Clamp(pos.x, bounds.min.x, bounds.max.x);
+            pos.z = Mathf.Clamp(pos.z, bounds.min.z, bounds.max.z);
 
             cam.transform.position = pos;//Vector3.Lerp(prev_pos, pos, Time.deltaTime);
         }
             
-        // left botton
+        // left button
         if(Input.GetMouseButtonDown(0)){
             // print the name of the hitted object
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -49,9 +57,16 @@ public class MouseManager : MonoBehaviour
         }
         if(Input.GetAxis("Mouse ScrollWheel") != 0f){
             // zoom in and out
-            cam.fieldOfView -= scrollSpeed * Input.GetAxis("Mouse ScrollWheel");
+            Vector3 pos = cam.transform.position;
+            var scrollAxis = Input.GetAxis("Mouse ScrollWheel");
+            pos.y -= scrollSpeed * scrollAxis;
+            pos.x -= scrollSpeed * scrollAxis;
+            pos.y = Mathf.Clamp(pos.y, minY, maxY);
+            pos.x = Mathf.Clamp(pos.x, bounds.min.x, bounds.max.x);
+            cam.transform.position = pos;
             // limits
-            cam.fieldOfView = Mathf.Clamp(cam.fieldOfView, minY, maxY);
+            //cam.transform.position = Mathf.Clamp(cam.fieldOfView, minY, maxY);
+
         }
     }
 }
