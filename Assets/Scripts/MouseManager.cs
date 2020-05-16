@@ -44,14 +44,13 @@ public class MouseManager : MonoBehaviour
             pos.x = Mathf.Clamp(pos.x, bounds.min.x, bounds.max.x);
             pos.z = Mathf.Clamp(pos.z, bounds.min.z, bounds.max.z);
 
-            cam.transform.position = pos;//Vector3.Lerp(prev_pos, pos, Time.deltaTime);
             this.smoothCamPos = pos;
         }
             
         // left button
         if(Input.GetMouseButtonDown(0)){
             // print the name of the hitted object
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
                 print(hit.collider.gameObject.name);
