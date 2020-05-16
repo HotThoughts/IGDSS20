@@ -5,8 +5,8 @@ using UnityEngine;
 public class MouseManager : MonoBehaviour
 {
     public float scrollSpeed = 100f;
-    private float maxY = 85f;
-    private float minY = 25f;
+    private readonly float maxY = 85f;
+    private readonly float minY = 25f;
     public float panSpeed;
     public Bounds bounds;
     public Camera cam;
@@ -45,7 +45,7 @@ public class MouseManager : MonoBehaviour
             pos.z = Mathf.Clamp(pos.z, bounds.min.z, bounds.max.z);
 
             cam.transform.position = pos;//Vector3.Lerp(prev_pos, pos, Time.deltaTime);
-            smoothCamPos = pos;
+            this.smoothCamPos = pos;
         }
             
         // left button
@@ -56,19 +56,20 @@ public class MouseManager : MonoBehaviour
             if (Physics.Raycast(ray, out hit))
                 print(hit.collider.gameObject.name);
         }
-        if(Input.GetAxis("Mouse ScrollWheel") != 0f){
-            // zoom in and out
-            Vector3 pos = cam.transform.position;
-            var scrollAxis = Input.GetAxis("Mouse ScrollWheel");
-            // Condition for fixing change of X axis while Y is max / min
-            if (pos.y <= maxY - 5f && pos.y >= minY + 5f)
+        float scrollAxis = Input.GetAxis("Mouse ScrollWheel");
+        Vector3 camPos = cam.transform.position;
+
+        if (scrollAxis != 0f)
+        {
+            Vector3 desiredPos = cam.transform.position + (cam.transform.forward * scrollSpeed) * scrollAxis;
+            if ((camPos.y >= maxY-5f && scrollAxis < 0) || (camPos.y <= minY+5f && scrollAxis > 0))
             {
-                pos.x -= scrollSpeed * scrollAxis;
-                pos.x = Mathf.Clamp(pos.x, bounds.min.x, bounds.max.x);
+                desiredPos = camPos;
             }
-            pos.y -= scrollSpeed * scrollAxis;
-            pos.y = Mathf.Clamp(pos.y, minY, maxY);
-            this.smoothCamPos = pos;
+            desiredPos.y = Mathf.Clamp(desiredPos.y, minY, maxY);
+            desiredPos.x = Mathf.Clamp(desiredPos.x, bounds.min.x, bounds.max.x);
+            desiredPos.z = Mathf.Clamp(desiredPos.z, bounds.min.z, bounds.max.z);
+            this.smoothCamPos = desiredPos;
         }
     }
 
