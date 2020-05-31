@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     public GameObject stoneTile;
     public GameObject mountainTile;
 
+
     #region Map generation
     private Tile[,] _tileMap; //2D array of all spawned tiles
     #endregion
@@ -54,10 +55,9 @@ public class GameManager : MonoBehaviour
     // awake is called before any Start functions
     void Awake()
     {
-        dim = heightMap.width;
-
-        for (int i = 0; i < dim; i++)
-            for (int j = 0; j < dim; j++)
+        _tileMap = new Tile[heightMap.width, heightMap.height];
+        for (int i = 0; i < heightMap.width; i++)
+            for (int j = 0; j < heightMap.height; j++)
             {
                 float height = heightMap.GetPixel(i, j).r;
 
@@ -65,30 +65,49 @@ public class GameManager : MonoBehaviour
                 int bias = i % 2 == 0 ? 0 : 5;
                 // Spawn tiles (8.66 IS MAGIC NUM HERE)
                 float magicNum = 8.66f;
-                if (height == 0f)
-                    Instantiate(waterTile, 
-                        new Vector3(i * magicNum, height * 10, j * 10 + bias), 
-                        new Quaternion(0f, 0f, 0f, 0f));
-                else if (height > 0f && height <= 0.2f)
-                    Instantiate(sandTile,
-                        new Vector3(i * magicNum, height * 10, j * 10 + bias),
-                        new Quaternion(0f, 0f, 0f, 0f));
-                else if (height > 0.2f && height <= 0.4f)
-                    Instantiate(grassTile,
-                        new Vector3(i * magicNum, height * 10, j * 10 + bias),
-                        new Quaternion(0f, 0f, 0f, 0f));
-                else if (height > 0.4f && height <= 0.6f)
-                    Instantiate(forestTile,
-                        new Vector3(i * magicNum, height * 10, j * 10 + bias),
-                        new Quaternion(0f, 0f, 0f, 0f));
-                else if (height > 0.6f && height <= 0.8f)
-                    Instantiate(stoneTile,
-                        new Vector3(i * magicNum, height * 10, j * 10 + bias),
-                        new Quaternion(0f, 0f, 0f, 0f));
+                GameObject tileType;
+                // Tile object
+                Tile t = new Tile();
+                if (height == 0f){
+                    tileType = waterTile;
+                    t._type = Tile.TileTypes.Water;
+                }
+                else if (height <= 0.2f)
+                {
+                    tileType = sandTile;
+                    t._type = Tile.TileTypes.Sand;
+                }
+                else if (height <= 0.4f)
+                {
+                    tileType = grassTile;
+                    t._type = Tile.TileTypes.Grass;
+                }
+                else if (height <= 0.6f)
+                {
+                    tileType = forestTile;
+                    t._type = Tile.TileTypes.Forest;
+                }
+                else if (height <= 0.8f)
+                {
+                    tileType = stoneTile;
+                    t._type = Tile.TileTypes.Stone;
+                }
                 else
-                    Instantiate(mountainTile,
+                {
+                    tileType = mountainTile;
+                    t._type = Tile.TileTypes.Mountain;
+                }
+                
+                GameObject tile = Instantiate(tileType,
                         new Vector3(i * magicNum, height * 10, j * 10 + bias),
                         new Quaternion(0f, 0f, 0f, 0f));
+                // Add Tile properties
+                t = tile.AddComponent<Tile>();
+                t._coordinateWidth = i;
+                t._coordinateHeight = j;
+                t._neighborTiles = FindNeighborsOfTile(t);
+                // Save Tile object to tilemap
+                _tileMap[i, j] = t;
             }
     }
 
@@ -210,6 +229,32 @@ public class GameManager : MonoBehaviour
         List<Tile> result = new List<Tile>();
 
         //TODO: put all neighbors in the result list
+        int w = _tileMap.GetLength(1) - 1;  // number of columns
+        int h = _tileMap.GetLength(0) - 1; // number of rows
+        int x = t._coordinateWidth;
+        int y = t._coordinateHeight; 
+        bool isEven = y % 2 == 0;
+
+        // Left
+        if (x > 0) result.Add(_tileMap[y, x-1]); 
+        // Right
+        if (x < w) result.Add(_tileMap[y, x+1]); 
+        // Down
+        if (y > 0) 
+        {
+            if (isEven && x > 0) result.Add(_tileMap[y-1, x-1]);
+            if (!isEven && x < w) result.Add(_tileMap[y-1, x+1]);
+
+            result.Add(_tileMap[y-1, x]); 
+        }
+        // Up
+        if (y < h)
+        {
+            if (isEven && x > 0) result.Add(_tileMap[y+1, x-1]);
+            if(!isEven && x < w) result.Add(_tileMap[y+1, x+1]);
+
+            result.Add(_tileMap[y+1, x]); 
+        }
 
         return result;
     }
