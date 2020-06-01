@@ -7,7 +7,7 @@ public class MouseManager : MonoBehaviour
     public float scrollSpeed = 100f;
     private readonly float maxY = 85f;
     private readonly float minY = 25f;
-    public float panSpeed;
+    public float panSpeed = 7f;
     public Bounds bounds;
     public Camera cam;
     private Vector3 prev_pos;
@@ -44,6 +44,7 @@ public class MouseManager : MonoBehaviour
             pos.x = Mathf.Clamp(pos.x, bounds.min.x, bounds.max.x);
             pos.z = Mathf.Clamp(pos.z, bounds.min.z, bounds.max.z);
 
+            cam.transform.position = pos;
             this.smoothCamPos = pos;
         }
             
