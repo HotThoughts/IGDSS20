@@ -7,9 +7,9 @@ public class Building: MonoBehaviour
     #region Attributes
     public BuildingType _type; // The name of the building
     public int _upkeep; // The money cost per minute
-    public int _moneyCost; // placement money cost
-    public int _planksCost; // placement planks cost
-    public Tile _tile; // R eference to the tile it is built on 
+    public int _moneyCost; // Placement money cost
+    public int _planksCost; // Placement planks cost
+    public Tile _tile; // Reference to the tile it is built on 
 
     public float _efficiency; // Calculated based on the surrounding tile types
     public float _resourceGenerationInterval; // If operating at 100% efficiency, this is the time in seconds it takes for one production cycle to finish

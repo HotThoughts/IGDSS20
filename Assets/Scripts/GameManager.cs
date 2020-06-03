@@ -55,7 +55,28 @@ public class GameManager : MonoBehaviour
     // awake is called before any Start functions
     void Awake()
     {
-        _tileMap = new Tile[heightMap.width, heightMap.height];
+        GenerateMap();
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        PopulateResourceDictionary();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        HandleKeyboardInput();
+        UpdateInspectorNumbersForResources();
+        
+    }
+    #endregion
+
+    #region Methods
+    void GenerateMap()
+    {
+                _tileMap = new Tile[heightMap.width, heightMap.height];
         for (int i = 0; i < heightMap.width; i++)
             for (int j = 0; j < heightMap.height; j++)
             {
@@ -110,23 +131,6 @@ public class GameManager : MonoBehaviour
                 _tileMap[i, j] = t;
             }
     }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        PopulateResourceDictionary();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        HandleKeyboardInput();
-        UpdateInspectorNumbersForResources();
-        
-    }
-    #endregion
-
-    #region Methods
     //Makes the resource dictionary usable by populating the values and keys
     void PopulateResourceDictionary()
     {
