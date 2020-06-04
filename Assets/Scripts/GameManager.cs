@@ -4,19 +4,11 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public Texture2D heightMap;
-    public int dim;
-
-    // Prefabs
-    public GameObject waterTile;
-    public GameObject sandTile;
-    public GameObject grassTile;
-    public GameObject forestTile;
-    public GameObject stoneTile;
-    public GameObject mountainTile;
-
 
     #region Map generation
+    public Texture2D heightMap;
+    private int dim;
+    public GameObject[] _tilePrefabs;
     private Tile[,] _tileMap; //2D array of all spawned tiles
     #endregion
 
@@ -69,14 +61,13 @@ public class GameManager : MonoBehaviour
     {
         HandleKeyboardInput();
         UpdateInspectorNumbersForResources();
-        
     }
     #endregion
 
     #region Methods
     void GenerateMap()
     {
-                _tileMap = new Tile[heightMap.width, heightMap.height];
+        _tileMap = new Tile[heightMap.width, heightMap.height];
         for (int i = 0; i < heightMap.width; i++)
             for (int j = 0; j < heightMap.height; j++)
             {
@@ -86,44 +77,21 @@ public class GameManager : MonoBehaviour
                 int bias = i % 2 == 0 ? 0 : 5;
                 // Spawn tiles (8.66 IS MAGIC NUM HERE)
                 float magicNum = 8.66f;
-                GameObject tileType;
-                // Tile object
-                Tile t = new Tile();
-                if (height == 0f){
-                    tileType = waterTile;
-                    t._type = Tile.TileTypes.Water;
-                }
-                else if (height <= 0.2f)
-                {
-                    tileType = sandTile;
-                    t._type = Tile.TileTypes.Sand;
-                }
-                else if (height <= 0.4f)
-                {
-                    tileType = grassTile;
-                    t._type = Tile.TileTypes.Grass;
-                }
-                else if (height <= 0.6f)
-                {
-                    tileType = forestTile;
-                    t._type = Tile.TileTypes.Forest;
-                }
-                else if (height <= 0.8f)
-                {
-                    tileType = stoneTile;
-                    t._type = Tile.TileTypes.Stone;
-                }
-                else
-                {
-                    tileType = mountainTile;
-                    t._type = Tile.TileTypes.Mountain;
-                }
-                
-                GameObject tile = Instantiate(tileType,
+                int typeIndex;
+                if (height == 0f) typeIndex = 0;
+                else if (height <= 0.2f) typeIndex = 1;
+                else if (height <= 0.4f) typeIndex = 2;
+                else if (height <= 0.6f) typeIndex = 3;
+                else if (height <= 0.8f) typeIndex = 4;
+                else typeIndex = 5;
+
+                GameObject tile = Instantiate(_tilePrefabs[typeIndex],
                         new Vector3(i * magicNum, height * 10, j * 10 + bias),
                         new Quaternion(0f, 0f, 0f, 0f));
+                
                 // Add Tile properties
-                t = tile.AddComponent<Tile>();
+                Tile t = tile.AddComponent<Tile>() as Tile;
+                t._type = (Tile.TileTypes) typeIndex+1; // increment typeIndex by 1 since the first item is Empty in TileTypes
                 t._coordinateWidth = i;
                 t._coordinateHeight = j;
                 t._neighborTiles = FindNeighborsOfTile(t);
