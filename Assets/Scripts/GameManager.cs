@@ -44,6 +44,8 @@ public class GameManager : MonoBehaviour
 
     #region Enconomy
     private int _money; // initial money
+    private int _income = 100; // constant income per economy tick
+    private float _enconomyTickInterval = 60f;
     #endregion
 
     #region MonoBehaviour
@@ -65,6 +67,8 @@ public class GameManager : MonoBehaviour
     {
         HandleKeyboardInput();
         UpdateInspectorNumbersForResources();
+        InvokeRepeating("TickEconomy", 0f, _enconomyTickInterval); 
+        TickEconomy();
     }
     #endregion
 
@@ -249,5 +253,16 @@ public class GameManager : MonoBehaviour
 
         return result;
     }
+
+    // Tick economy every 60 seconds. 
+    // Subtract the sum of all building's upkeep cost from the money pool. 
+    // Also, add a constant income of 100 money per economy tick.
+    void TickEconomy()
+    {
+        _money += _income;
+        foreach (Building b in FindObjectsOfType(typeof(Building)) as Building[])
+            _money -= b._upkeep;
+    }
+    
     #endregion
 }
