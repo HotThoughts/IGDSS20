@@ -203,13 +203,11 @@ public class GameManager : MonoBehaviour
 
             Building b = selectedBuilding.GetComponent<Building>() as Building;
 
-            if (t._building != null && b._canBeBuiltOn.Contains(t._type) && _money >= b._moneyCost && _ResourcesInWarehouse_Planks >= b._planksCost)
+            if (t._building ==  null && b._canBeBuiltOn.Contains(t._type) && _money >= b._moneyCost && _ResourcesInWarehouse_Planks >= b._planksCost)
             {
                 GameObject building =  Instantiate(selectedBuilding, t.gameObject.transform) as GameObject;
+                b.InitializeBuilding(_selectedBuildingPrefabIndex, t);
                 t._building = b;
-                // Add Building properties 
-                b._type = (Building.BuildingType) _selectedBuildingPrefabIndex + 1; // increment by 1 since the first item is Empty in BuildingType 
-                b._tile = t;
                 // Update money and planks because of the placement
                 _money -= b._moneyCost;
                 _resourcesInWarehouse[ResourceTypes.Planks] -= b._planksCost;
@@ -262,6 +260,11 @@ public class GameManager : MonoBehaviour
         _money += _income;
         foreach (Building b in FindObjectsOfType(typeof(Building)) as Building[])
             _money -= b._upkeep;
+    }
+    // Production and efficient
+    void ProductionCycle()
+    {
+        //TODO
     }
     
     #endregion
