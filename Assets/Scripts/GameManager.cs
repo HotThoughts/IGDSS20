@@ -42,6 +42,10 @@ public class GameManager : MonoBehaviour
     public enum ResourceTypes { None, Fish, Wood, Planks, Wool, Clothes, Potato, Schnapps }; //Enumeration of all available resource types. Can be addressed from other scripts by calling GameManager.ResourceTypes
     #endregion
 
+    #region Enconomy
+    private int _money; // initial money
+    #endregion
+
     #region MonoBehaviour
 
     // awake is called before any Start functions
@@ -191,7 +195,22 @@ public class GameManager : MonoBehaviour
         if (_selectedBuildingPrefabIndex < _buildingPrefabs.Length)
         {
             //TODO: check if building can be placed and then istantiate it
+            GameObject selectedBuilding = _buildingPrefabs[_selectedBuildingPrefabIndex];
 
+            Building b = selectedBuilding.GetComponent<Building>() as Building;
+
+            if (t._building != null && b._canBeBuiltOn.Contains(t._type) && _money >= b._moneyCost && _ResourcesInWarehouse_Planks >= b._planksCost)
+            {
+                GameObject building =  Instantiate(selectedBuilding, t.gameObject.transform) as GameObject;
+                t._building = b;
+                // Add Building properties 
+                b._type = (Building.BuildingType) _selectedBuildingPrefabIndex + 1; // increment by 1 since the first item is Empty in BuildingType 
+                b._tile = t;
+                // Update money and planks because of the placement
+                _money -= b._moneyCost;
+                _resourcesInWarehouse[ResourceTypes.Planks] -= b._planksCost;
+                Debug.Log("Building placed.");
+            }
         }
     }
 
