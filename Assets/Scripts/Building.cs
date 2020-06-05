@@ -32,9 +32,7 @@ public class Building: MonoBehaviour
     {
         this._tile = t;
         this._type = (BuildingType) index + 1; // increment by 1 since the first item in BuildingType is Empty 
-        this._efficiency = ComputeEfficiency(t);
-        this._scalesWithNeighboringTiles = this._efficiency > 0;
-        
+
         switch(this._type)
         {
             case BuildingType.Fishery:
@@ -42,10 +40,13 @@ public class Building: MonoBehaviour
                 this._planksCost = 2;
                 this._upkeep = 40;
                 this._outputCount = 1;
+                this._efficiency = ComputeEfficiency();
+                this._scalesWithNeighboringTiles = true;
                 this._resourceGenerationInterval = 30f;
                 this._canBeBuiltOn.Add(Tile.TileTypes.Sand);
                 this._minNeighbors = 1;
                 this._maxNeighbors = 3;
+                this._inputResource = GameManager.ResourceTypes.None;
                 this._outputResource = GameManager.ResourceTypes.Fish;
                 break;
             case BuildingType.Lumberjack:
@@ -53,10 +54,13 @@ public class Building: MonoBehaviour
                 this._planksCost = 0;
                 this._upkeep = 10;
                 this._outputCount = 1;
+                this._efficiency = ComputeEfficiency();
+                this._scalesWithNeighboringTiles = true;
                 this._resourceGenerationInterval = 15f;
                 this._canBeBuiltOn.Add(Tile.TileTypes.Forest);
                 this._minNeighbors = 1;
                 this._maxNeighbors = 6;
+                this._inputResource = GameManager.ResourceTypes.None;
                 this._outputResource = GameManager.ResourceTypes.Wood;
                 break;
             case BuildingType.Sawmill:
@@ -64,6 +68,8 @@ public class Building: MonoBehaviour
                 this._planksCost = 0;
                 this._upkeep = 10;
                 this._outputCount = 2;
+                this._efficiency = 1f;
+                this._scalesWithNeighboringTiles = false;
                 this._resourceGenerationInterval = 15f;
                 this._canBeBuiltOn.Add(Tile.TileTypes.Grass);
                 this._canBeBuiltOn.Add(Tile.TileTypes.Forest);
@@ -76,10 +82,13 @@ public class Building: MonoBehaviour
                 this._planksCost = 2;
                 this._upkeep = 20;
                 this._outputCount = 1;
+                this._efficiency = ComputeEfficiency();
+                this._scalesWithNeighboringTiles = true;
                 this._resourceGenerationInterval = 30f;
                 this._canBeBuiltOn.Add(Tile.TileTypes.Grass);
                 this._minNeighbors = 1;
                 this._maxNeighbors = 4;
+                this._inputResource = GameManager.ResourceTypes.None;
                 this._outputResource = GameManager.ResourceTypes.Wood; 
                 break;
             case BuildingType.FrameworkKnitters:
@@ -87,6 +96,8 @@ public class Building: MonoBehaviour
                 this._planksCost = 20;
                 this._upkeep = 50;
                 this._outputCount = 1;
+                this._efficiency = 1f;
+                this._scalesWithNeighboringTiles = false;
                 this._resourceGenerationInterval = 30f;
                 this._canBeBuiltOn.Add(Tile.TileTypes.Grass);
                 this._canBeBuiltOn.Add(Tile.TileTypes.Forest);
@@ -99,10 +110,13 @@ public class Building: MonoBehaviour
                 this._planksCost = 2;
                 this._upkeep = 20;
                 this._outputCount = 1;
+                this._efficiency = ComputeEfficiency();
+                this._scalesWithNeighboringTiles = true;
                 this._resourceGenerationInterval = 30f;
                 this._canBeBuiltOn.Add(Tile.TileTypes.Grass);
                 this._minNeighbors = 1;
                 this._maxNeighbors = 4;
+                this._inputResource = GameManager.ResourceTypes.None;
                 this._outputResource = GameManager.ResourceTypes.Potato; 
                 break;
             case BuildingType.SchnappsDistillery:
@@ -110,6 +124,8 @@ public class Building: MonoBehaviour
                 this._planksCost = 2;
                 this._upkeep = 40;
                 this._outputCount = 1;
+                this._efficiency = 1f;
+                this._scalesWithNeighboringTiles = false;
                 this._resourceGenerationInterval = 30f;
                 this._canBeBuiltOn.Add(Tile.TileTypes.Grass);
                 this._canBeBuiltOn.Add(Tile.TileTypes.Forest);
@@ -119,24 +135,34 @@ public class Building: MonoBehaviour
                 break;
         }
     }
-    float ComputeEfficiency(Tile t)
+    float ComputeEfficiency()
     {
-        switch(this._type)
+        if (this._scalesWithNeighboringTiles)
         {
-            case BuildingType.Fishery:
-                return ComputeSurroundingTiles(t, Tile.TileTypes.Water) / this._maxNeighbors; 
-            case BuildingType.Lumberjack:
-                return ComputeSurroundingTiles(t, Tile.TileTypes.Forest) / this._maxNeighbors;
-            case BuildingType.SheepFarm:
-            case BuildingType.PotatoFarm:
-                return ComputeSurroundingTiles(t, Tile.TileTypes.Grass) / this._maxNeighbors; 
+            Tile.TileTypes tt = Tile.TileTypes.Empty;
+            switch(this._type)
+            {
+                case BuildingType.Fishery:
+                    tt = Tile.TileTypes.Water;
+                    break;
+                case BuildingType.Lumberjack:
+                    tt = Tile.TileTypes.Forest;
+                    break;
+                case BuildingType.SheepFarm:
+                case BuildingType.PotatoFarm:
+                    tt = Tile.TileTypes.Grass;
+                    break;
+            }
+            int surroundingTiles = this._tile._neighborTiles.FindAll(t => t._type == tt).Count;; 
+            if (this._maxNeighbors <= surroundingTiles) return 1f;
+            if (this._minNeighbors > surroundingTiles) return 0f;
+            return surroundingTiles / this._maxNeighbors; 
         }
-        // Otherwise
-        return 0f;
+        return 1f;
     }
 
-    int ComputeSurroundingTiles(Tile tile, Tile.TileTypes type)
+    public void UpdateEfficiency()
     {
-        return tile._neighborTiles.FindAll(t => t._type == type).Count;
+        this._efficiency = ComputeEfficiency();
     }
 }
