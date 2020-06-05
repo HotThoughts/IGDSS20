@@ -61,6 +61,7 @@ public class GameManager : MonoBehaviour
     {
         PopulateResourceDictionary();
         StartCoroutine("TickEconomy");
+        StartCoroutine("ProductionCycle");
     }
 
     // Update is called once per frame
@@ -269,21 +270,23 @@ public class GameManager : MonoBehaviour
     // Production and efficient
     IEnumerator ProductionCycle()
     {
-        foreach (Building b in FindObjectsOfType(typeof(Building)) as Building[]) 
-        {
-            // Update surrounding tiles and compute its current efficiency
-            b._tile._neighborTiles = FindNeighborsOfTile(b._tile);
-            b.UpdateEfficiency();
-            // skip the production cycle of this building because its efficiency is 0
-            if (b._efficiency == 0f) continue;
-            // wait for x seconds
-            yield return new WaitForSeconds(b._resourceGenerationInterval / b._efficiency); 
-            
-            // Update resources in warehouse
-            bool costResource = b._inputResource != ResourceTypes.None;
-            if (costResource && HasResourceInWarehoues(b._inputResource)) 
-                _resourcesInWarehouse[b._inputResource] -= 1;
-            _resourcesInWarehouse[b._outputResource] += b._outputCount;
+        while(true){
+            foreach (Building b in FindObjectsOfType(typeof(Building)) as Building[]) 
+            {
+                // Update surrounding tiles and compute its current efficiency
+                b._tile._neighborTiles = FindNeighborsOfTile(b._tile);
+                b.UpdateEfficiency();
+                // skip the production cycle of this building because its efficiency is 0
+                if (b._efficiency == 0f) continue;
+                // wait for x seconds
+                yield return new WaitForSeconds(b._resourceGenerationInterval / b._efficiency); 
+                
+                // Update resources in warehouse
+                bool costResource = b._inputResource != ResourceTypes.None;
+                if (costResource && HasResourceInWarehoues(b._inputResource)) 
+                    _resourcesInWarehouse[b._inputResource] -= 1;
+                _resourcesInWarehouse[b._outputResource] += b._outputCount;
+            }
         }
     }
     #endregion
