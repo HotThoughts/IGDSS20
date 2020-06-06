@@ -170,6 +170,7 @@ MonoBehaviour:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
   cam: {fileID: 0}
+  gameManager: {fileID: 0}
 --- !u!1 &270386454
 GameObject:
   m_ObjectHideFlags: 0
@@ -296,6 +297,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd580981bf7ab5845976a690fd1035a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+<<<<<<< HEAD
   heightMap: {fileID: 2800000, guid: e78aeb62d2558404f9e4a0b2b2d6b52a, type: 3}
   waterTile: {fileID: 2064574628029001573, guid: 2a914b6a4ef15cb4ca77257050f15f29,
     type: 3}
@@ -309,6 +311,16 @@ MonoBehaviour:
     type: 3}
   mountainTile: {fileID: 9154993657079601320, guid: 35b64c97ffd7b7e4caf04c0e621aec7b,
     type: 3}
+=======
+  heightMap: {fileID: 2800000, guid: 5c2448c2ffa208243962d18e173c7b21, type: 3}
+  _tilePrefabs:
+  - {fileID: 3331960066271536643, guid: beaf3e6eeb231784387cb99da90a7c7d, type: 3}
+  - {fileID: 5575372501429904281, guid: f549c24ecaa45cb498514352a3675d1c, type: 3}
+  - {fileID: 9154993657079601320, guid: 35b64c97ffd7b7e4caf04c0e621aec7b, type: 3}
+  - {fileID: 6461190606886679958, guid: ff7ef13f88a71c94eb42898019398dcd, type: 3}
+  - {fileID: 5044814526144528268, guid: 476946919e1d5104fb4c93f1dc2db5e9, type: 3}
+  - {fileID: 2064574628029001573, guid: 2a914b6a4ef15cb4ca77257050f15f29, type: 3}
+>>>>>>> master
   _buildingPrefabs: []
   _selectedBuildingPrefabIndex: 0
   _ResourcesInWarehouse_Fish: 0

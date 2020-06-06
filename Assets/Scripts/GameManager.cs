@@ -7,6 +7,7 @@ using UnityEngine.WSA;
 
 public class GameManager : MonoBehaviour
 {
+<<<<<<< HEAD
     public Texture2D heightMap;
     private int dim;
 
@@ -17,8 +18,13 @@ public class GameManager : MonoBehaviour
     public GameObject forestTile;
     public GameObject stoneTile;
     public GameObject mountainTile;
+=======
+>>>>>>> master
 
     #region Map generation
+    public Texture2D heightMap;
+    private int dim;
+    public GameObject[] _tilePrefabs;
     private Tile[,] _tileMap; //2D array of all spawned tiles
     #endregion
 
@@ -52,11 +58,18 @@ public class GameManager : MonoBehaviour
     public enum ResourceTypes { None, Fish, Wood, Planks, Wool, Clothes, Potato, Schnapps }; //Enumeration of all available resource types. Can be addressed from other scripts by calling GameManager.ResourceTypes
     #endregion
 
+    #region Enconomy
+    private int _money; // initial money
+    private int _income = 100; // constant income per economy tick
+    private float _enconomyTickInterval = 3f;
+    #endregion
+
     #region MonoBehaviour
 
     // awake is called before any Start functions
     void Awake()
     {
+<<<<<<< HEAD
         dim = heightMap.width;
         _tileMap = new Tile[dim, dim];
 
@@ -107,16 +120,24 @@ public class GameManager : MonoBehaviour
 
                 _tileMap[i, j] = _tile;
             }
+=======
+        GenerateMap();
+>>>>>>> master
     }
 
     // Start is called before the first frame update
     void Start()
     {
         PopulateResourceDictionary();
+<<<<<<< HEAD
         foreach (Tile tile in _tileMap)
         {
             tile._neighborTiles = FindNeighborsOfTile(tile);
         }
+=======
+        StartCoroutine("TickEconomy");
+        StartCoroutine("ProductionCycle");
+>>>>>>> master
     }
 
     // Update is called once per frame
@@ -124,11 +145,44 @@ public class GameManager : MonoBehaviour
     {
         HandleKeyboardInput();
         UpdateInspectorNumbersForResources();
-        
     }
     #endregion
 
     #region Methods
+    void GenerateMap()
+    {
+        _tileMap = new Tile[heightMap.width, heightMap.height];
+        for (int i = 0; i < heightMap.width; i++)
+            for (int j = 0; j < heightMap.height; j++)
+            {
+                float height = heightMap.GetPixel(i, j).r;
+
+                // We need bias to arrange hexagons over X axis
+                int bias = i % 2 == 0 ? 0 : 5;
+                // Spawn tiles (8.66 IS MAGIC NUM HERE)
+                float magicNum = 8.66f;
+                int typeIndex;
+                if (height == 0f) typeIndex = 0;
+                else if (height <= 0.2f) typeIndex = 1;
+                else if (height <= 0.4f) typeIndex = 2;
+                else if (height <= 0.6f) typeIndex = 3;
+                else if (height <= 0.8f) typeIndex = 4;
+                else typeIndex = 5;
+
+                GameObject tile = Instantiate(_tilePrefabs[typeIndex],
+                        new Vector3(i * magicNum, height * 10, j * 10 + bias),
+                        new Quaternion(0f, 0f, 0f, 0f));
+                
+                // Add Tile properties
+                Tile t = tile.AddComponent<Tile>() as Tile;
+                t._type = (Tile.TileTypes) typeIndex+1; // increment typeIndex by 1 since the first item is Empty in TileTypes
+                t._coordinateWidth = i;
+                t._coordinateHeight = j;
+                t._neighborTiles = FindNeighborsOfTile(t);
+                // Save Tile object to tilemap
+                _tileMap[i, j] = t;
+            }
+    }
     //Makes the resource dictionary usable by populating the values and keys
     void PopulateResourceDictionary()
     {
@@ -221,7 +275,20 @@ public class GameManager : MonoBehaviour
         if (_selectedBuildingPrefabIndex < _buildingPrefabs.Length)
         {
             //TODO: check if building can be placed and then istantiate it
+            GameObject selectedBuilding = _buildingPrefabs[_selectedBuildingPrefabIndex];
 
+            Building b = selectedBuilding.GetComponent<Building>() as Building;
+
+            if (t._building ==  null && b._canBeBuiltOn.Contains(t._type) && _money >= b._moneyCost && _ResourcesInWarehouse_Planks >= b._planksCost)
+            {
+                GameObject building =  Instantiate(selectedBuilding, t.gameObject.transform) as GameObject;
+                b.InitializeBuilding(_selectedBuildingPrefabIndex, t);
+                t._building = b;
+                // Update money and planks because of the placement
+                _money -= b._moneyCost;
+                _resourcesInWarehouse[ResourceTypes.Planks] -= b._planksCost;
+                Debug.Log("Building placed.");
+            }
         }
     }
 
@@ -230,6 +297,7 @@ public class GameManager : MonoBehaviour
     {
         List<Tile> result = new List<Tile>();
 
+<<<<<<< HEAD
         // Put all neighbors in the result list
         int i = t._coordinateHeight;
         int j = t._coordinateWidth;
@@ -251,15 +319,83 @@ public class GameManager : MonoBehaviour
             if (i < dim - 1 && j > 0)           result.Add(_tileMap[i + 1, j - 1]);
             if (i > 0)                          result.Add(_tileMap[i - 1, j]);
             if (i > 0 && j > 0)               result.Add(_tileMap[i - 1, j - 1]);
+=======
+        //TODO: put all neighbors in the result list
+        int w = _tileMap.GetLength(1) - 1;  // number of columns
+        int h = _tileMap.GetLength(0) - 1; // number of rows
+        int x = t._coordinateWidth;
+        int y = t._coordinateHeight; 
+        bool isEven = y % 2 == 0;
+
+        // Left
+        if (x > 0) result.Add(_tileMap[y, x-1]); 
+        // Right
+        if (x < w) result.Add(_tileMap[y, x+1]); 
+        // Down
+        if (y > 0) 
+        {
+            if (isEven && x > 0) result.Add(_tileMap[y-1, x-1]);
+            if (!isEven && x < w) result.Add(_tileMap[y-1, x+1]);
+
+            result.Add(_tileMap[y-1, x]); 
+        }
+        // Up
+        if (y < h)
+        {
+            if (isEven && x > 0) result.Add(_tileMap[y+1, x-1]);
+            if(!isEven && x < w) result.Add(_tileMap[y+1, x+1]);
+
+            result.Add(_tileMap[y+1, x]); 
+>>>>>>> master
         }
 
         return result;
     }
 
+<<<<<<< HEAD
     public static bool IsEven(int val)
     {
         return val % 2 == 0;
     }
 
+=======
+    // Tick economy every 60 seconds. 
+    // Subtract the sum of all building's upkeep cost from the money pool. 
+    // Also, add a constant income of 100 money per economy tick.
+    IEnumerator TickEconomy()
+    {
+        while(true)
+        {
+            _money += _income;
+            foreach (Building b in FindObjectsOfType(typeof(Building)) as Building[])
+                _money -= b._upkeep;
+            Debug.Log("Economy Ticked :D");
+
+            yield return new WaitForSeconds(_enconomyTickInterval);
+        }
+    }
+    // Production and efficient
+    IEnumerator ProductionCycle()
+    {
+        while(true){
+            foreach (Building b in FindObjectsOfType(typeof(Building)) as Building[]) 
+            {
+                // Update surrounding tiles and compute its current efficiency
+                b._tile._neighborTiles = FindNeighborsOfTile(b._tile);
+                b.UpdateEfficiency();
+                // skip the production cycle of this building because its efficiency is 0
+                if (b._efficiency == 0f) continue;
+                // wait for x seconds
+                yield return new WaitForSeconds(b._resourceGenerationInterval / b._efficiency); 
+                
+                // Update resources in warehouse
+                bool costResource = b._inputResource != ResourceTypes.None;
+                if (costResource && HasResourceInWarehoues(b._inputResource)) 
+                    _resourcesInWarehouse[b._inputResource] -= 1;
+                _resourcesInWarehouse[b._outputResource] += b._outputCount;
+            }
+        }
+    }
+>>>>>>> master
     #endregion
 }
