@@ -154,6 +154,7 @@ Transform:
   - {fileID: 1159358735}
   - {fileID: 1746178749}
   - {fileID: 538292286}
+  - {fileID: 1384865079}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -581,10 +582,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scrollSpeed: 10
   panSpeed: 0.1
-  panLimit: {x: 0, y: 0, z: 0}
-  minY: 0
-  maxY: 100
+  bounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
   cam: {fileID: 0}
+  gameManager: {fileID: 0}
 --- !u!4 &834136087
 Transform:
   m_ObjectHideFlags: 0
@@ -825,6 +827,91 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3904172423750652247, guid: beaf3e6eeb231784387cb99da90a7c7d,
     type: 3}
   m_PrefabInstance: {fileID: 1159358734}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1384865078
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 140006873}
+    m_Modifications:
+    - target: {fileID: 2898875402915342555, guid: ff7ef13f88a71c94eb42898019398dcd,
+        type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4735863466978198210, guid: ff7ef13f88a71c94eb42898019398dcd,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 4735863466978198210, guid: ff7ef13f88a71c94eb42898019398dcd,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4735863466978198210, guid: ff7ef13f88a71c94eb42898019398dcd,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4735863466978198210, guid: ff7ef13f88a71c94eb42898019398dcd,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4735863466978198210, guid: ff7ef13f88a71c94eb42898019398dcd,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4735863466978198210, guid: ff7ef13f88a71c94eb42898019398dcd,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4735863466978198210, guid: ff7ef13f88a71c94eb42898019398dcd,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4735863466978198210, guid: ff7ef13f88a71c94eb42898019398dcd,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4735863466978198210, guid: ff7ef13f88a71c94eb42898019398dcd,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4735863466978198210, guid: ff7ef13f88a71c94eb42898019398dcd,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4735863466978198210, guid: ff7ef13f88a71c94eb42898019398dcd,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5005782318199143494, guid: ff7ef13f88a71c94eb42898019398dcd,
+        type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6461190606886679958, guid: ff7ef13f88a71c94eb42898019398dcd,
+        type: 3}
+      propertyPath: m_Name
+      value: Fishery
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ff7ef13f88a71c94eb42898019398dcd, type: 3}
+--- !u!4 &1384865079 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4735863466978198210, guid: ff7ef13f88a71c94eb42898019398dcd,
+    type: 3}
+  m_PrefabInstance: {fileID: 1384865078}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1457566342
 GameObject:
@@ -1135,13 +1222,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   heightMap: {fileID: 0}
-  dim: 0
-  waterTile: {fileID: 0}
-  sandTile: {fileID: 0}
-  grassTile: {fileID: 0}
-  forestTile: {fileID: 0}
-  stoneTile: {fileID: 0}
-  mountainTile: {fileID: 0}
+  _tilePrefabs: []
+  _buildingPrefabs: []
+  _selectedBuildingPrefabIndex: 0
+  _ResourcesInWarehouse_Fish: 0
+  _ResourcesInWarehouse_Wood: 0
+  _ResourcesInWarehouse_Planks: 0
+  _ResourcesInWarehouse_Wool: 0
+  _ResourcesInWarehouse_Clothes: 0
+  _ResourcesInWarehouse_Potato: 0
+  _ResourcesInWarehouse_Schnapps: 0
 --- !u!4 &1768092942
 Transform:
   m_ObjectHideFlags: 0

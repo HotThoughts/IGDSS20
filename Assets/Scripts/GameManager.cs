@@ -7,19 +7,6 @@ using UnityEngine.WSA;
 
 public class GameManager : MonoBehaviour
 {
-<<<<<<< HEAD
-    public Texture2D heightMap;
-    private int dim;
-
-    // Prefabs
-    public GameObject waterTile;
-    public GameObject sandTile;
-    public GameObject grassTile;
-    public GameObject forestTile;
-    public GameObject stoneTile;
-    public GameObject mountainTile;
-=======
->>>>>>> master
 
     #region Map generation
     public Texture2D heightMap;
@@ -69,75 +56,15 @@ public class GameManager : MonoBehaviour
     // awake is called before any Start functions
     void Awake()
     {
-<<<<<<< HEAD
-        dim = heightMap.width;
-        _tileMap = new Tile[dim, dim];
-
-        for (int i = 0; i < dim; i++)
-            for (int j = 0; j < dim; j++)
-            {
-                float height = heightMap.GetPixel(i, j).r;
-                GameObject spawnTile = null;
-                Tile.TileTypes _spawnType;
-                // We need bias to arrange hexagons over X axis
-                int bias = i % 2 == 0 ? 0 : 5;
-                // Choose the tile to spawn
-                float magicNum = 8.66f;
-
-                if (height == 0f) {
-                    spawnTile = waterTile;
-                    _spawnType = Tile.TileTypes.Water;
-                }
-                else if (height > 0f && height <= 0.2f) {
-                    spawnTile = sandTile;
-                    _spawnType = Tile.TileTypes.Sand;
-                }
-                else if (height > 0.2f && height <= 0.4f) {
-                    spawnTile = grassTile;
-                    _spawnType = Tile.TileTypes.Grass;
-                }
-                else if (height > 0.4f && height <= 0.6f) {
-                    spawnTile = forestTile;
-                    _spawnType = Tile.TileTypes.Forest;
-                }
-                else if (height > 0.6f && height <= 0.8f) {
-                    spawnTile = stoneTile;
-                    _spawnType = Tile.TileTypes.Stone;
-                }
-                else {
-                    spawnTile = mountainTile;
-                    _spawnType = Tile.TileTypes.Mountain;
-                }
-                // Spawn tile
-                Instantiate(spawnTile,
-                    new Vector3(i * magicNum, height * 10, j * 10 + bias),
-                    new Quaternion(0f, 0f, 0f, 0f));
-                
-                Tile _tile = gameObject.AddComponent<Tile>();
-                _tile._type = _spawnType;
-                _tile._coordinateHeight = i;
-                _tile._coordinateWidth = j;
-
-                _tileMap[i, j] = _tile;
-            }
-=======
         GenerateMap();
->>>>>>> master
     }
 
     // Start is called before the first frame update
     void Start()
     {
         PopulateResourceDictionary();
-<<<<<<< HEAD
-        foreach (Tile tile in _tileMap)
-        {
-            tile._neighborTiles = FindNeighborsOfTile(tile);
-        }
-=======
         StartCoroutine("TickEconomy");
         StartCoroutine("ProductionCycle");
->>>>>>> master
     }
 
     // Update is called once per frame
@@ -297,29 +224,6 @@ public class GameManager : MonoBehaviour
     {
         List<Tile> result = new List<Tile>();
 
-<<<<<<< HEAD
-        // Put all neighbors in the result list
-        int i = t._coordinateHeight;
-        int j = t._coordinateWidth;
-
-        if (IsEven(t._coordinateHeight+1))
-        {
-            if (j < dim - 1)                    result.Add(_tileMap[i, j + 1]);
-            if (j > 0)                          result.Add(_tileMap[i, j - 1]);
-            if (i < dim - 1)                    result.Add(_tileMap[i + 1, j]);
-            if (i < dim - 1 && j < dim - 1)     result.Add(_tileMap[i + 1, j + 1]);
-            if (i > 0)                          result.Add(_tileMap[i - 1, j]);
-            if (i > 0 && j < dim - 1)           result.Add(_tileMap[i - 1, j + 1]);
-        }
-        else
-        {
-            if (j < dim - 1)                    result.Add(_tileMap[i, j + 1]);
-            if (j > 0)                          result.Add(_tileMap[i, j - 1]);
-            if (i < dim - 1)                    result.Add(_tileMap[i + 1, j]);
-            if (i < dim - 1 && j > 0)           result.Add(_tileMap[i + 1, j - 1]);
-            if (i > 0)                          result.Add(_tileMap[i - 1, j]);
-            if (i > 0 && j > 0)               result.Add(_tileMap[i - 1, j - 1]);
-=======
         //TODO: put all neighbors in the result list
         int w = _tileMap.GetLength(1) - 1;  // number of columns
         int h = _tileMap.GetLength(0) - 1; // number of rows
@@ -345,20 +249,11 @@ public class GameManager : MonoBehaviour
             if (isEven && x > 0) result.Add(_tileMap[y+1, x-1]);
             if(!isEven && x < w) result.Add(_tileMap[y+1, x+1]);
 
-            result.Add(_tileMap[y+1, x]); 
->>>>>>> master
+            result.Add(_tileMap[y+1, x]);
         }
 
         return result;
     }
-
-<<<<<<< HEAD
-    public static bool IsEven(int val)
-    {
-        return val % 2 == 0;
-    }
-
-=======
     // Tick economy every 60 seconds. 
     // Subtract the sum of all building's upkeep cost from the money pool. 
     // Also, add a constant income of 100 money per economy tick.
@@ -396,6 +291,5 @@ public class GameManager : MonoBehaviour
             }
         }
     }
->>>>>>> master
     #endregion
 }
