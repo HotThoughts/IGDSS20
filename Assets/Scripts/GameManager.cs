@@ -46,9 +46,9 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region Enconomy
-    private int _money; // initial money
-    private int _income = 100; // constant income per economy tick
-    private float _enconomyTickInterval = 3f;
+    public int _money; // initial money
+    public int _income = 100; // constant income per economy tick
+    private float _economyTickInterval = 3f;
     #endregion
 
     #region MonoBehaviour
@@ -63,8 +63,8 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         PopulateResourceDictionary();
-        StartCoroutine("TickEconomy");
-        StartCoroutine("ProductionCycle");
+        StartCoroutine(TickEconomy());
+        //StartCoroutine(ProductionCycle());
     }
 
     // Update is called once per frame
@@ -190,7 +190,7 @@ public class GameManager : MonoBehaviour
     //Forwards the tile to the method for spawning buildings
     public void TileClicked(int height, int width)
     {
-        Tile t = _tileMap[height, width];
+        Tile t = _tileMap[width, height];
 
         PlaceBuildingOnTile(t);
     }
@@ -201,19 +201,20 @@ public class GameManager : MonoBehaviour
         //if there is building prefab for the number input
         if (_selectedBuildingPrefabIndex < _buildingPrefabs.Length)
         {
-            //TODO: check if building can be placed and then istantiate it
+            //TODO: check if building can be placed and then istantiate it - DONE
             GameObject selectedBuilding = _buildingPrefabs[_selectedBuildingPrefabIndex];
 
-            Building b = selectedBuilding.GetComponent<Building>() as Building;
+            Building b = gameObject.AddComponent<Building>();
+            b.InitializeBuilding(_selectedBuildingPrefabIndex, t);
 
             if (t._building ==  null && b._canBeBuiltOn.Contains(t._type) && _money >= b._moneyCost && _ResourcesInWarehouse_Planks >= b._planksCost)
             {
                 GameObject building =  Instantiate(selectedBuilding, t.gameObject.transform) as GameObject;
-                b.InitializeBuilding(_selectedBuildingPrefabIndex, t);
                 t._building = b;
                 // Update money and planks because of the placement
                 _money -= b._moneyCost;
                 _resourcesInWarehouse[ResourceTypes.Planks] -= b._planksCost;
+                StartCoroutine(ProductionCycle(b));
                 Debug.Log("Building placed.");
             }
         }
@@ -224,7 +225,7 @@ public class GameManager : MonoBehaviour
     {
         List<Tile> result = new List<Tile>();
 
-        //TODO: put all neighbors in the result list
+        //TODO: put all neighbors in the result list - DONE
         int w = _tileMap.GetLength(1) - 1;  // number of columns
         int h = _tileMap.GetLength(0) - 1; // number of rows
         int x = t._coordinateWidth;
@@ -266,29 +267,27 @@ public class GameManager : MonoBehaviour
                 _money -= b._upkeep;
             Debug.Log("Economy Ticked :D");
 
-            yield return new WaitForSeconds(_enconomyTickInterval);
+            yield return new WaitForSeconds(_economyTickInterval);
         }
     }
     // Production and efficient
-    IEnumerator ProductionCycle()
+    IEnumerator ProductionCycle(Building b)
     {
         while(true){
-            foreach (Building b in FindObjectsOfType(typeof(Building)) as Building[]) 
-            {
-                // Update surrounding tiles and compute its current efficiency
-                b._tile._neighborTiles = FindNeighborsOfTile(b._tile);
-                b.UpdateEfficiency();
-                // skip the production cycle of this building because its efficiency is 0
-                if (b._efficiency == 0f) continue;
-                // wait for x seconds
-                yield return new WaitForSeconds(b._resourceGenerationInterval / b._efficiency); 
-                
-                // Update resources in warehouse
-                bool costResource = b._inputResource != ResourceTypes.None;
-                if (costResource && HasResourceInWarehoues(b._inputResource)) 
-                    _resourcesInWarehouse[b._inputResource] -= 1;
-                _resourcesInWarehouse[b._outputResource] += b._outputCount;
-            }
+            
+            // Update surrounding tiles and compute its current efficiency
+            b._tile._neighborTiles = FindNeighborsOfTile(b._tile);
+            b.UpdateEfficiency();
+            // skip the production cycle of this building because its efficiency is 0
+            if (b._efficiency == 0f) continue;
+            // wait for x seconds
+            yield return new WaitForSeconds(b._resourceGenerationInterval / b._efficiency);
+            // Update resources in warehouse
+            bool costResource = b._inputResource != ResourceTypes.None;
+            if (costResource && HasResourceInWarehoues(b._inputResource)) 
+                _resourcesInWarehouse[b._inputResource] -= 1;
+            _resourcesInWarehouse[b._outputResource] += b._outputCount;
+            yield return null;
         }
     }
     #endregion

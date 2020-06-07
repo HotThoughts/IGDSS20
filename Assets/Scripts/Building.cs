@@ -32,6 +32,7 @@ public class Building: MonoBehaviour
     {
         this._tile = t;
         this._type = (BuildingType) index + 1; // increment by 1 since the first item in BuildingType is Empty 
+        this._canBeBuiltOn = new List<Tile.TileTypes>();
 
         switch(this._type)
         {
