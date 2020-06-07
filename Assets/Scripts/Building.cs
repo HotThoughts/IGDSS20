@@ -41,7 +41,6 @@ public class Building: MonoBehaviour
                 this._planksCost = 2;
                 this._upkeep = 40;
                 this._outputCount = 1;
-                this._efficiency = ComputeEfficiency();
                 this._scalesWithNeighboringTiles = true;
                 this._resourceGenerationInterval = 30f;
                 this._canBeBuiltOn.Add(Tile.TileTypes.Sand);
@@ -49,13 +48,13 @@ public class Building: MonoBehaviour
                 this._maxNeighbors = 3;
                 this._inputResource = GameManager.ResourceTypes.None;
                 this._outputResource = GameManager.ResourceTypes.Fish;
+                this._efficiency = ComputeEfficiency();
                 break;
             case BuildingType.Lumberjack:
                 this._moneyCost = 100;
                 this._planksCost = 0;
                 this._upkeep = 10;
                 this._outputCount = 1;
-                this._efficiency = ComputeEfficiency();
                 this._scalesWithNeighboringTiles = true;
                 this._resourceGenerationInterval = 15f;
                 this._canBeBuiltOn.Add(Tile.TileTypes.Forest);
@@ -63,6 +62,7 @@ public class Building: MonoBehaviour
                 this._maxNeighbors = 6;
                 this._inputResource = GameManager.ResourceTypes.None;
                 this._outputResource = GameManager.ResourceTypes.Wood;
+                this._efficiency = ComputeEfficiency();
                 break;
             case BuildingType.Sawmill:
                 this._moneyCost = 100;
@@ -83,18 +83,18 @@ public class Building: MonoBehaviour
                 this._planksCost = 2;
                 this._upkeep = 20;
                 this._outputCount = 1;
-                this._efficiency = ComputeEfficiency();
                 this._scalesWithNeighboringTiles = true;
                 this._resourceGenerationInterval = 30f;
                 this._canBeBuiltOn.Add(Tile.TileTypes.Grass);
                 this._minNeighbors = 1;
                 this._maxNeighbors = 4;
                 this._inputResource = GameManager.ResourceTypes.None;
-                this._outputResource = GameManager.ResourceTypes.Wood; 
+                this._outputResource = GameManager.ResourceTypes.Wood;
+                this._efficiency = ComputeEfficiency();
                 break;
             case BuildingType.FrameworkKnitters:
                 this._moneyCost = 400;
-                this._planksCost = 20;
+                this._planksCost = 2;
                 this._upkeep = 50;
                 this._outputCount = 1;
                 this._efficiency = 1f;
@@ -111,14 +111,14 @@ public class Building: MonoBehaviour
                 this._planksCost = 2;
                 this._upkeep = 20;
                 this._outputCount = 1;
-                this._efficiency = ComputeEfficiency();
                 this._scalesWithNeighboringTiles = true;
                 this._resourceGenerationInterval = 30f;
                 this._canBeBuiltOn.Add(Tile.TileTypes.Grass);
                 this._minNeighbors = 1;
                 this._maxNeighbors = 4;
                 this._inputResource = GameManager.ResourceTypes.None;
-                this._outputResource = GameManager.ResourceTypes.Potato; 
+                this._outputResource = GameManager.ResourceTypes.Potato;
+                this._efficiency = ComputeEfficiency();
                 break;
             case BuildingType.SchnappsDistillery:
                 this._moneyCost = 100;
@@ -154,10 +154,10 @@ public class Building: MonoBehaviour
                     tt = Tile.TileTypes.Grass;
                     break;
             }
-            int surroundingTiles = this._tile._neighborTiles.FindAll(t => t._type == tt).Count;; 
+            int surroundingTiles = this._tile._neighborTiles.FindAll(t => t._type == tt).Count;
             if (this._maxNeighbors <= surroundingTiles) return 1f;
             if (this._minNeighbors > surroundingTiles) return 0f;
-            return surroundingTiles / this._maxNeighbors; 
+            return (float)surroundingTiles / this._maxNeighbors; 
         }
         return 1f;
     }

@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
     #region Enconomy
     public int _money; // initial money
     public int _income = 100; // constant income per economy tick
-    private float _economyTickInterval = 3f;
+    private float _economyTickInterval = 60f;
     #endregion
 
     #region MonoBehaviour
@@ -79,8 +79,8 @@ public class GameManager : MonoBehaviour
     void GenerateMap()
     {
         _tileMap = new Tile[heightMap.width, heightMap.height];
-        for (int i = 0; i < heightMap.width; i++)
-            for (int j = 0; j < heightMap.height; j++)
+        for (int i = 0; i < heightMap.height; i++)
+            for (int j = 0; j < heightMap.width; j++)
             {
                 float height = heightMap.GetPixel(i, j).r;
 
@@ -103,12 +103,15 @@ public class GameManager : MonoBehaviour
                 // Add Tile properties
                 Tile t = tile.AddComponent<Tile>() as Tile;
                 t._type = (Tile.TileTypes) typeIndex+1; // increment typeIndex by 1 since the first item is Empty in TileTypes
-                t._coordinateWidth = i;
-                t._coordinateHeight = j;
-                t._neighborTiles = FindNeighborsOfTile(t);
+                t._coordinateHeight = i;
+                t._coordinateWidth = j;
+                //t._neighborTiles = FindNeighborsOfTile(t);
                 // Save Tile object to tilemap
                 _tileMap[i, j] = t;
             }
+        // Now find neighbours for all tiles
+        foreach(Tile t in _tileMap)
+            t._neighborTiles = FindNeighborsOfTile(t);
     }
     //Makes the resource dictionary usable by populating the values and keys
     void PopulateResourceDictionary()
@@ -190,7 +193,7 @@ public class GameManager : MonoBehaviour
     //Forwards the tile to the method for spawning buildings
     public void TileClicked(int height, int width)
     {
-        Tile t = _tileMap[width, height];
+        Tile t = _tileMap[height, width];
 
         PlaceBuildingOnTile(t);
     }
@@ -216,6 +219,9 @@ public class GameManager : MonoBehaviour
                 _resourcesInWarehouse[ResourceTypes.Planks] -= b._planksCost;
                 StartCoroutine(ProductionCycle(b));
                 Debug.Log("Building placed.");
+            } else
+            {
+                Destroy(b);
             }
         }
     }
@@ -279,14 +285,23 @@ public class GameManager : MonoBehaviour
             b._tile._neighborTiles = FindNeighborsOfTile(b._tile);
             b.UpdateEfficiency();
             // skip the production cycle of this building because its efficiency is 0
-            if (b._efficiency == 0f) continue;
+            if (b._efficiency == 0f)
+            {
+                yield return null;
+                continue;
+            }
             // wait for x seconds
             yield return new WaitForSeconds(b._resourceGenerationInterval / b._efficiency);
             // Update resources in warehouse
             bool costResource = b._inputResource != ResourceTypes.None;
-            if (costResource && HasResourceInWarehoues(b._inputResource)) 
+            if (costResource && HasResourceInWarehoues(b._inputResource))
+            {
                 _resourcesInWarehouse[b._inputResource] -= 1;
-            _resourcesInWarehouse[b._outputResource] += b._outputCount;
+                _resourcesInWarehouse[b._outputResource] += b._outputCount;
+            } else
+            {
+                _resourcesInWarehouse[b._outputResource] += b._outputCount;
+            }
             yield return null;
         }
     }
