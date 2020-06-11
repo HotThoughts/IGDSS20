@@ -207,12 +207,12 @@ public class GameManager : MonoBehaviour
             //TODO: check if building can be placed and then istantiate it - DONE
             GameObject selectedBuilding = _buildingPrefabs[_selectedBuildingPrefabIndex];
 
-            Building b = gameObject.AddComponent<Building>();
+            ProductionBuilding b = gameObject.AddComponent<ProductionBuilding>();
             b.InitializeBuilding(_selectedBuildingPrefabIndex, t);
 
             if (t._building ==  null && b._canBeBuiltOn.Contains(t._type) && _money >= b._moneyCost && _ResourcesInWarehouse_Planks >= b._planksCost)
             {
-                GameObject building =  Instantiate(selectedBuilding, t.gameObject.transform) as GameObject;
+                GameObject ProductionBuilding =  Instantiate(selectedBuilding, t.gameObject.transform) as GameObject;
                 t._building = b;
                 // Update money and planks because of the placement
                 _money -= b._moneyCost;
@@ -269,7 +269,7 @@ public class GameManager : MonoBehaviour
         while(true)
         {
             _money += _income;
-            foreach (Building b in FindObjectsOfType(typeof(Building)) as Building[])
+            foreach (ProductionBuilding b in FindObjectsOfType(typeof(ProductionBuilding)) as ProductionBuilding[])
                 _money -= b._upkeep;
             Debug.Log("Economy Ticked :D");
 
@@ -277,7 +277,7 @@ public class GameManager : MonoBehaviour
         }
     }
     // Production and efficient
-    IEnumerator ProductionCycle(Building b)
+    IEnumerator ProductionCycle(ProductionBuilding b)
     {
         while(true){
             
