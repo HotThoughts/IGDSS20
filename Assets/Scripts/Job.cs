@@ -15,6 +15,7 @@ public class Job
 
     public void AssignWorker(Worker w)
     {
+        w._employed = true;
         _worker = w;
         _building.WorkerAssignedToBuilding(w);
     }

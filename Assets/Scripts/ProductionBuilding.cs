@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
-public class ProductionBuilding: MonoBehaviour
+public class ProductionBuilding: Building
 {
     #region Attributes
     public BuildingType _type; // The name of the building
@@ -23,11 +24,14 @@ public class ProductionBuilding: MonoBehaviour
     public GameManager.ResourceTypes _outputResource; // A choice for output resource type
     #endregion
 
+    #region Job
+    public List<Job> _jobs = new List<Job>(); // all jobs belongs to the building
+    public int _jobsCapacity;
+    #endregion
+
     #region Enumerations
     public enum BuildingType { Empty, Fishery, Lumberjack, Sawmill, SheepFarm, FrameworkKnitters, PotatoFarm, SchnappsDistillery };
     #endregion
-
-
     public void InitializeBuilding(int index, Tile t)
     {
         this._tile = t;
@@ -48,6 +52,7 @@ public class ProductionBuilding: MonoBehaviour
                 this._maxNeighbors = 3;
                 this._inputResource = GameManager.ResourceTypes.None;
                 this._outputResource = GameManager.ResourceTypes.Fish;
+                this._jobsCapacity = 25;
                 this._efficiency = ComputeEfficiency();
                 break;
             case BuildingType.Lumberjack:
@@ -62,6 +67,7 @@ public class ProductionBuilding: MonoBehaviour
                 this._maxNeighbors = 6;
                 this._inputResource = GameManager.ResourceTypes.None;
                 this._outputResource = GameManager.ResourceTypes.Wood;
+                this._jobsCapacity = 5;
                 this._efficiency = ComputeEfficiency();
                 break;
             case BuildingType.Sawmill:
@@ -77,6 +83,7 @@ public class ProductionBuilding: MonoBehaviour
                 this._canBeBuiltOn.Add(Tile.TileTypes.Stone);
                 this._inputResource = GameManager.ResourceTypes.Wood;
                 this._outputResource = GameManager.ResourceTypes.Planks; 
+                this._jobsCapacity = 10;
                 break;
             case BuildingType.SheepFarm:
                 this._moneyCost = 100;
@@ -90,6 +97,7 @@ public class ProductionBuilding: MonoBehaviour
                 this._maxNeighbors = 4;
                 this._inputResource = GameManager.ResourceTypes.None;
                 this._outputResource = GameManager.ResourceTypes.Wood;
+                this._jobsCapacity = 10;
                 this._efficiency = ComputeEfficiency();
                 break;
             case BuildingType.FrameworkKnitters:
@@ -105,6 +113,7 @@ public class ProductionBuilding: MonoBehaviour
                 this._canBeBuiltOn.Add(Tile.TileTypes.Stone);
                 this._inputResource = GameManager.ResourceTypes.Wood;
                 this._outputResource = GameManager.ResourceTypes.Clothes;  
+                this._jobsCapacity = 50;
                 break;
             case BuildingType.PotatoFarm:
                 this._moneyCost = 100;
@@ -118,6 +127,7 @@ public class ProductionBuilding: MonoBehaviour
                 this._maxNeighbors = 4;
                 this._inputResource = GameManager.ResourceTypes.None;
                 this._outputResource = GameManager.ResourceTypes.Potato;
+                this._jobsCapacity = 20;
                 this._efficiency = ComputeEfficiency();
                 break;
             case BuildingType.SchnappsDistillery:
@@ -133,11 +143,19 @@ public class ProductionBuilding: MonoBehaviour
                 this._canBeBuiltOn.Add(Tile.TileTypes.Stone);
                 this._inputResource = GameManager.ResourceTypes.Potato;
                 this._outputResource = GameManager.ResourceTypes.Schnapps; 
+                this._jobsCapacity = 50;
                 break;
         }
     }
+    // TODO: I am not sure how to compute efficiency. Here is my understanding:
+    // Efficiency is the average of
+    // - surrounding tiles
+    // - number of employees
+    // - happiness of employees
     float ComputeEfficiency()
     {
+        float result = 1f;
+        // compute efficiency based on surrounding tiles 
         if (this._scalesWithNeighboringTiles)
         {
             Tile.TileTypes tt = Tile.TileTypes.Empty;
@@ -155,15 +173,29 @@ public class ProductionBuilding: MonoBehaviour
                     break;
             }
             int surroundingTiles = this._tile._neighborTiles.FindAll(t => t._type == tt).Count;
-            if (this._maxNeighbors <= surroundingTiles) return 1f;
-            if (this._minNeighbors > surroundingTiles) return 0f;
-            return (float)surroundingTiles / this._maxNeighbors; 
+            if (this._maxNeighbors <= surroundingTiles) result = 1f;
+            if (this._minNeighbors > surroundingTiles) result = 0f;
+            result = (float) surroundingTiles / this._maxNeighbors; 
         }
-        return 1f;
-    }
 
+        // add effiency based on the precentage of employment
+        result += (float) _workers.Count / this._jobsCapacity;
+        // add effiency based on happiness of workers 
+        result += (float)  _workers.Sum(w => w._happiness) / _workers.Count;
+
+        Debug.Log("Efficiency: " + result);
+        return (float) result * 1/3;
+    }
     public void UpdateEfficiency()
     {
         this._efficiency = ComputeEfficiency();
+    }
+    // register job instances in Job Manager when a building is built
+    public void PopulateJobs()
+    {
+        for(int i = 0; i < this._jobsCapacity; i++)
+            this._jobs.Add(new Job(this));
+
+        this._jobManager.RegisterJobs(this._jobs);
     }
 }

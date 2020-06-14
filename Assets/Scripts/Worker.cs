@@ -5,25 +5,38 @@ using UnityEngine;
 public class Worker : MonoBehaviour
 {
     #region Manager References
-    JobManager _jobManager; //Reference to the JobManager
-    GameManager _gameManager;//Reference to the GameManager
+    public JobManager _jobManager; //Reference to the JobManager
+    public GameManager _gameManager;//Reference to the GameManager
     #endregion
 
-    public float _age; // The age of this worker
-    public float _happiness; // The happiness of this worker
+    public int _age = 0; // The age of this worker
+    public float _happiness = 1; // The happiness of this worker, between 0 and 1
+    public bool _employed = false; // the status of employment. We will set it to true in job class
 
+    public Building _house; // house building
+    public Job _job; // reference to job, we can know where he or she works
+
+    public Worker(Building b)
+    {
+        this._house = b;
+    }
     // Start is called before the first frame update
     void Start()
     {
+        InvokeRepeating("IncrementAge", 15f, 15f);
     }
 
     // Update is called once per frame
     void Update()
     {
         Age();
+        Debug.Log("Current Age: " + this._age);
     }
-
-
+    // increment age by 1
+    private void IncrementAge()
+    {
+        _age++;
+    }
     private void Age()
     {
         //TODO: Implement a life cycle, where a Worker ages by 1 year every 15 real seconds.
@@ -54,11 +67,30 @@ public class Worker : MonoBehaviour
 
     private void Retire()
     {
-        _jobManager.RemoveWorker(this);
+        _jobManager.ReleaseJob(this);
     }
 
     private void Die()
     {
-        Destroy(this.gameObject, 1f);
+       // reset the worker
+        this._age = 0;
+        this._happiness = 1f;
+        this._employed = false;
+        // remove this worker from the house where he or she lives
+        this._job._building.WorkerRemovedFromBuilding(this);
+
+        this.gameObject.SetActive(false);
+    } 
+    float ComputeHappiness()
+    {   //TODO: compute happiness based on supplies and employment status 
+        return 1f;
+    }
+    private void UpdateHappiness()
+    {
+        this._happiness = ComputeHappiness();
+    }
+    private void ConsumeResources()
+    {
+        //TODO: periodic consumption of resources (fish, clothes & schnapps)
     }
 }

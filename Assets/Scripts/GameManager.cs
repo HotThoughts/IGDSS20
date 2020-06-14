@@ -49,6 +49,7 @@ public class GameManager : MonoBehaviour
     public int _money; // initial money
     public int _income = 100; // constant income per economy tick
     private float _economyTickInterval = 60f;
+    public int _incomePerWorker = 100;
     #endregion
 
     #region MonoBehaviour
@@ -269,8 +270,10 @@ public class GameManager : MonoBehaviour
         while(true)
         {
             _money += _income;
+            _money += _incomePerWorker * FindObjectsOfType(typeof(Worker)).Length;
             foreach (ProductionBuilding b in FindObjectsOfType(typeof(ProductionBuilding)) as ProductionBuilding[])
                 _money -= b._upkeep;
+            
             Debug.Log("Economy Ticked :D");
 
             yield return new WaitForSeconds(_economyTickInterval);
