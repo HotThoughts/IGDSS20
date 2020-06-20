@@ -43,7 +43,7 @@ public class JobManager : MonoBehaviour
                    RemoveJob(index);
                    // Update properties of job
                    job.AssignWorker(w);
-                   job._building.WorkerAssignedToBuilding(w);
+                   job._prodBuilding.WorkerAssignedToBuilding(w);
                    
                    RemoveWorker(w);
                    w._job = job;

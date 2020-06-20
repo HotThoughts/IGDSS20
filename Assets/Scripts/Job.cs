@@ -5,24 +5,24 @@ using UnityEngine;
 public class Job
 {
     public Worker _worker; //The worker occupying this job
-    public Building _building; //The building offering the job
+    public ProductionBuilding _prodBuilding; //The building offering the job
 
     //Constructor. Call new Job(this) from the Building script to instanciate a job
-    public Job(Building building)
+    public Job(ProductionBuilding building)
     {
-        _building = building;
+        _prodBuilding = building;
     }
 
     public void AssignWorker(Worker w)
     {
         w._employed = true;
         _worker = w;
-        _building.WorkerAssignedToBuilding(w);
+        _prodBuilding.WorkerAssignedToBuilding(w);
     }
 
     public void RemoveWorker(Worker w)
     {
         _worker = null;
-        _building.WorkerRemovedFromBuilding(w);
+        _prodBuilding.WorkerRemovedFromBuilding(w);
     }
 }

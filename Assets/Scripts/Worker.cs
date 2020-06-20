@@ -13,10 +13,18 @@ public class Worker : MonoBehaviour
     public float _happiness = 1; // The happiness of this worker, between 0 and 1
     public bool _employed = false; // the status of employment. We will set it to true in job class
 
-    public Building _house; // house building
+    public HousingBuilding _house; // house building
     public Job _job; // reference to job, we can know where he or she works
+    public List<GameManager.ResourceTypes> _resoucesToConsume 
+    {
+        get { return new List<GameManager.ResourceTypes> {
+            GameManager.ResourceTypes.Fish,
+            GameManager.ResourceTypes.Schnapps,
+            GameManager.ResourceTypes.Clothes
+        }; }
+    } // resources that each worker consumes
 
-    public Worker(Building b)
+    public Worker(HousingBuilding b)
     {
         this._house = b;
     }
@@ -36,6 +44,7 @@ public class Worker : MonoBehaviour
     private void IncrementAge()
     {
         _age++;
+        ConsumeResources();
     }
     private void Age()
     {
@@ -77,13 +86,29 @@ public class Worker : MonoBehaviour
         this._happiness = 1f;
         this._employed = false;
         // remove this worker from the house where he or she lives
-        this._job._building.WorkerRemovedFromBuilding(this);
+        this._house.WorkerRemovedFromBuilding(this);
+        // remove this worker from the house where he or she works
+        this._job._prodBuilding.WorkerRemovedFromBuilding(this);
 
         this.gameObject.SetActive(false);
     } 
     float ComputeHappiness()
-    {   //TODO: compute happiness based on supplies and employment status 
-        return 1f;
+    {
+        // Employment status and resources in warehouse give each 1/4 part of
+        // the whole happiness
+        float _hasJob = 0.25f;
+        float _happinessGrade = 0f;
+        // Does worker have a job?
+        if (this._job != null)
+            _happinessGrade += _hasJob;
+        // Is worker supplied with resources?
+        foreach (var res in _resoucesToConsume)
+        {
+            if (_gameManager._resourcesInWarehouse[res] > 0)
+                _happinessGrade += 0.25f;
+        }
+
+        return _happinessGrade;
     }
     private void UpdateHappiness()
     {
@@ -91,6 +116,9 @@ public class Worker : MonoBehaviour
     }
     private void ConsumeResources()
     {
-        //TODO: periodic consumption of resources (fish, clothes & schnapps)
+        foreach(var res in _resoucesToConsume)
+        {
+            _gameManager._resourcesInWarehouse[res]--;
+        }
     }
 }
