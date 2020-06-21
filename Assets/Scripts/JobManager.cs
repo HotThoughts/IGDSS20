@@ -87,7 +87,7 @@ public class JobManager : MonoBehaviour
     }
     public void ReleaseJob(Worker w)
     {
-        if (w._job._worker != null)
+        if (w._job != null)
         {
             w._job._worker = null;
             RegisterJob(w._job);

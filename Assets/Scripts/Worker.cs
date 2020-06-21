@@ -101,7 +101,8 @@ public class Worker : MonoBehaviour
         // remove this worker from the house where he or she lives
         this._house.WorkerRemovedFromBuilding(this);
         // remove this worker from the house where he or she works
-        this._job._prodBuilding.WorkerRemovedFromBuilding(this);
+        if (this._job != null)
+            this._job._prodBuilding.WorkerRemovedFromBuilding(this);
 
         this.gameObject.SetActive(false);
     } 
