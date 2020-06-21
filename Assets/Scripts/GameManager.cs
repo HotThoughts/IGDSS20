@@ -20,6 +20,21 @@ public class GameManager : MonoBehaviour
     public int _selectedBuildingPrefabIndex = 0; //The current index used for choosing a prefab to spawn from the _buildingPrefabs list
     #endregion
 
+    #region Singleton
+    private static GameManager _instanse;
+    public static GameManager Instance
+    {
+        get
+        {
+            return _instanse ? _instanse: (_instanse = (new GameObject("GameManager").AddComponent<GameManager>()));
+        }
+    }
+    #endregion
+
+    public GameManager()
+    {
+        _instanse = this;
+    }
 
     #region Resources
     public Dictionary<ResourceTypes, float> _resourcesInWarehouse = new Dictionary<ResourceTypes, float>(); //Holds a number of stored resources for every ResourceType
@@ -185,7 +200,7 @@ public class GameManager : MonoBehaviour
     }
 
     //Checks if there is at least one material for the queried resource type in the warehouse
-    public bool HasResourceInWarehoues(ResourceTypes resource)
+    public bool HasResourceInWarehouse(ResourceTypes resource)
     {
         return _resourcesInWarehouse[resource] >= 1;
     }
@@ -202,23 +217,28 @@ public class GameManager : MonoBehaviour
     //Checks if the currently selected building type can be placed on the given tile and then instantiates an instance of the prefab
     private void PlaceBuildingOnTile(Tile t)
     {
+        Building b;
         //if there is building prefab for the number input
         if (_selectedBuildingPrefabIndex < _buildingPrefabs.Length)
         {
+            if (_selectedBuildingPrefabIndex < 7)
+                b = gameObject.AddComponent<ProductionBuilding>();
+            else
+                b = gameObject.AddComponent<HousingBuilding>();
             //TODO: check if building can be placed and then istantiate it - DONE
             GameObject selectedBuilding = _buildingPrefabs[_selectedBuildingPrefabIndex];
 
-            ProductionBuilding b = gameObject.AddComponent<ProductionBuilding>();
             b.InitializeBuilding(_selectedBuildingPrefabIndex, t);
 
             if (t._building ==  null && b._canBeBuiltOn.Contains(t._type) && _money >= b._moneyCost && _ResourcesInWarehouse_Planks >= b._planksCost)
             {
-                GameObject ProductionBuilding =  Instantiate(selectedBuilding, t.gameObject.transform) as GameObject;
+                GameObject _building =  Instantiate(selectedBuilding, t.gameObject.transform) as GameObject;
                 t._building = b;
                 // Update money and planks because of the placement
                 _money -= b._moneyCost;
                 _resourcesInWarehouse[ResourceTypes.Planks] -= b._planksCost;
-                StartCoroutine(ProductionCycle(b));
+                if (b.GetType() == typeof(ProductionBuilding))
+                    StartCoroutine(ProductionCycle((ProductionBuilding)b));
                 Debug.Log("Building placed.");
             } else
             {
@@ -297,7 +317,7 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(b._resourceGenerationInterval / b._efficiency);
             // Update resources in warehouse
             bool costResource = b._inputResource != ResourceTypes.None;
-            if (costResource && HasResourceInWarehoues(b._inputResource))
+            if (costResource && HasResourceInWarehouse(b._inputResource))
             {
                 _resourcesInWarehouse[b._inputResource] -= 1;
                 _resourcesInWarehouse[b._outputResource] += b._outputCount;

@@ -8,7 +8,14 @@ public class JobManager : MonoBehaviour
     public List<Job> _availableJobs = new List<Job>();
     public List<Worker> _unoccupiedWorkers = new List<Worker>();
 
-
+    private static JobManager _instance;
+    public static JobManager Instance
+    {
+        get
+        {
+            return _instance ? _instance : (_instance = (new GameObject("JobManager").AddComponent<JobManager>()));
+        }
+    }
 
     #region MonoBehaviour
     // Start is called before the first frame update
@@ -35,7 +42,7 @@ public class JobManager : MonoBehaviour
             //TODO: What should be done with unoccupied workers?
             foreach(Worker w in _unoccupiedWorkers)
             {
-                if(_availableJobs == null) break;
+                if(_availableJobs == null || _availableJobs.Count == 0) break;
                 else
                 {   // Assign a job to a worker randomly
                    int index = Random.Range(0, _availableJobs.Count);
@@ -80,8 +87,11 @@ public class JobManager : MonoBehaviour
     }
     public void ReleaseJob(Worker w)
     {
-        w._job._worker = null;
-        RegisterJob(w._job);
+        if (w._job._worker != null)
+        {
+            w._job._worker = null;
+            RegisterJob(w._job);
+        }
     }
 
     #endregion

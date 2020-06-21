@@ -12,18 +12,28 @@ public class WorkerPooler : MonoBehaviour
     void Awake()
     {
         current = this;
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
         workers = new List<GameObject>();
-        for(int i = 0; i < pooledAmount; i++)
+        for (int i = 0; i < pooledAmount; i++)
         {
-            GameObject obj = (GameObject) Instantiate(worker);
+            worker = new GameObject();
+            GameObject obj = (GameObject)Instantiate(worker);
             obj.AddComponent<Worker>();
             obj.SetActive(false);
             workers.Add(obj);
         }
+    }
+
+    public static WorkerPooler Instance
+    {
+        get
+        {
+            return current ? current : (current = (new GameObject("WorkerPooler").AddComponent<WorkerPooler>()));
+        }
+    }
+    // Start is called before the first frame update
+    void Start()
+    {
+        
     }
 
     public GameObject GetPooledWorker()

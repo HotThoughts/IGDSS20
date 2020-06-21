@@ -28,6 +28,11 @@ public class Worker : MonoBehaviour
     {
         this._house = b;
     }
+    private void Awake()
+    {
+        _jobManager = JobManager.Instance;
+        _gameManager = GameManager.Instance;
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -43,31 +48,38 @@ public class Worker : MonoBehaviour
     // increment age by 1
     private void IncrementAge()
     {
+        EventualDeath();
         _age++;
         ConsumeResources();
     }
     private void Age()
     {
-        //TODO: Implement a life cycle, where a Worker ages by 1 year every 15 real seconds.
         //When becoming of age, the worker enters the job market, and leaves it when retiring.
-        //Eventually, the worker dies and leaves an empty space in his home. His Job occupation is also freed up.
-
-        if (_age > 14)
-        {
-            BecomeOfAge();
-        }
-
-        if (_age > 64)
-        {
-            Retire();
-        }
-
         if (_age > 100)
         {
             Die();
+            return;
+        }
+        if (_age > 64)
+        {
+            Retire();
+            return;
+        }
+        if (_age > 14)
+        {
+            BecomeOfAge();
+            return;
         }
     }
 
+    private void EventualDeath()
+    {
+        //Eventually, the worker dies and leaves an empty space in his home. His Job occupation is also freed up.
+        float prob = Random.Range(0f, 1f);
+        // Calculation of death: 0.015 * Age - Happiness
+        if (0.015f * _age - _happiness > prob)
+            Die();
+    }
 
     public void BecomeOfAge()
     {
@@ -81,7 +93,8 @@ public class Worker : MonoBehaviour
 
     private void Die()
     {
-       // reset the worker
+        Retire();
+        // reset the worker
         this._age = 0;
         this._happiness = 1f;
         this._employed = false;
@@ -104,7 +117,7 @@ public class Worker : MonoBehaviour
         // Is worker supplied with resources?
         foreach (var res in _resoucesToConsume)
         {
-            if (_gameManager._resourcesInWarehouse[res] > 0)
+            if (_gameManager.HasResourceInWarehouse(res))
                 _happinessGrade += 0.25f;
         }
 
@@ -118,7 +131,8 @@ public class Worker : MonoBehaviour
     {
         foreach(var res in _resoucesToConsume)
         {
-            _gameManager._resourcesInWarehouse[res]--;
+            if (_gameManager.HasResourceInWarehouse(res))
+                _gameManager._resourcesInWarehouse[res]--;
         }
     }
 }

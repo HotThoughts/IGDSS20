@@ -325,6 +325,7 @@ MonoBehaviour:
   - {fileID: 5575372501429904281, guid: a737a6e76f50f1349bc3319b9ecc1bb3, type: 3}
   - {fileID: 5575372501429904281, guid: 852f207873dc66842812759febc570f5, type: 3}
   - {fileID: 5044814526144528268, guid: 186da4171193c5c4eb68bc25b23895e5, type: 3}
+  - {fileID: 5575372501429904281, guid: 395f4a0356745424993171fc3ab65043, type: 3}
   _selectedBuildingPrefabIndex: 0
   _ResourcesInWarehouse_Fish: 0
   _ResourcesInWarehouse_Wood: 0
@@ -335,6 +336,7 @@ MonoBehaviour:
   _ResourcesInWarehouse_Schnapps: 0
   _money: 0
   _income: 100
+  _incomePerWorker: 100
 --- !u!1 &1564566626
 GameObject:
   m_ObjectHideFlags: 0

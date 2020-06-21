@@ -6,17 +6,10 @@ using System.Linq;
 public class ProductionBuilding: Building
 {
     #region Attributes
-    public BuildingType _type; // The name of the building
-    public int _upkeep; // The money cost per minute
-    public int _moneyCost; // Placement money cost
-    public int _planksCost; // Placement planks cost
-    public Tile _tile; // Reference to the tile it is built on 
 
-    public float _efficiency; // Calculated based on the surrounding tile types
     public float _resourceGenerationInterval; // If operating at 100% efficiency, this is the time in seconds it takes for one production cycle to finish
     public float _outputCount; // The number of output resources per generation cycle(for example the Sawmill produces 2 planks at a time)
 
-    public List<Tile.TileTypes> _canBeBuiltOn; // A restriction on which types of tiles it can be placed on
     public bool _scalesWithNeighboringTiles; // A choice if its efficiency scales with a specific type of surrounding tile
     public int _minNeighbors; // The minimum number of surrounding tiles its efficiency scales with(0-6)
     public int _maxNeighbors; // The maximum number of surrounding tiles its efficiency scales with(0-6)
@@ -29,15 +22,12 @@ public class ProductionBuilding: Building
     public int _jobsCapacity;
     #endregion
 
-    #region Enumerations
-    public enum BuildingType { Empty, Fishery, Lumberjack, Sawmill, SheepFarm, FrameworkKnitters, PotatoFarm, SchnappsDistillery };
-    #endregion
-    public void InitializeBuilding(int index, Tile t)
+    public override void InitializeBuilding(int index, Tile t)
     {
+        _workers = new List<Worker>();
         this._tile = t;
         this._type = (BuildingType) index + 1; // increment by 1 since the first item in BuildingType is Empty 
         this._canBeBuiltOn = new List<Tile.TileTypes>();
-
         switch(this._type)
         {
             case BuildingType.Fishery:
@@ -181,12 +171,13 @@ public class ProductionBuilding: Building
         // add effiency based on the precentage of employment
         result += (float) _workers.Count / this._jobsCapacity;
         // add effiency based on happiness of workers 
-        result += (float)  _workers.Sum(w => w._happiness) / _workers.Count;
+        if (_workers.Count > 0)
+            result += (float)  _workers.Sum(w => w._happiness) / _workers.Count;
 
         Debug.Log("Efficiency: " + result);
         return (float) result * 1/3;
     }
-    public void UpdateEfficiency()
+    public override void UpdateEfficiency()
     {
         this._efficiency = ComputeEfficiency();
     }
@@ -198,4 +189,5 @@ public class ProductionBuilding: Building
 
         this._jobManager.RegisterJobs(this._jobs);
     }
+
 }
