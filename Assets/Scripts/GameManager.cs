@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     #region Buildings
     public GameObject[] _buildingPrefabs; //References to the building prefabs
     public int _selectedBuildingPrefabIndex = 0; //The current index used for choosing a prefab to spawn from the _buildingPrefabs list
+    public List<Building> _placedBuildings;
     #endregion
 
     #region Singleton
@@ -34,6 +35,7 @@ public class GameManager : MonoBehaviour
     public GameManager()
     {
         _instanse = this;
+        _placedBuildings = new List<Building>();
     }
 
     #region Resources
@@ -240,6 +242,8 @@ public class GameManager : MonoBehaviour
                 if (b.GetType() == typeof(ProductionBuilding))
                     StartCoroutine(ProductionCycle((ProductionBuilding)b));
                 Debug.Log("Building placed.");
+                // Add to List of all buildings placed
+                _placedBuildings.Add(b);
             } else
             {
                 Destroy(b);
