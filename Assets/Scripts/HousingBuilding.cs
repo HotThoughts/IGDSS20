@@ -63,8 +63,7 @@ public class HousingBuilding : Building {
     }
     // The efficiency should depend on the average happiness of the workers living there. 
     float ComputeEfficiency()
-    {   
-       
+    {  
         float sum = 0;
         foreach(Worker w in _workers)
             sum += w._happiness;

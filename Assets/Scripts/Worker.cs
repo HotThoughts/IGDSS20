@@ -28,6 +28,10 @@ public class Worker : MonoBehaviour
     {
         this._house = b;
     }
+    public void MoveToTile(Tile t)
+    {
+        //
+    }
     private void Awake()
     {
         _jobManager = JobManager.Instance;
@@ -84,11 +88,13 @@ public class Worker : MonoBehaviour
     public void BecomeOfAge()
     {
         _jobManager.RegisterWorker(this);
+        // Spawn prefab
     }
 
     private void Retire()
     {
         _jobManager.ReleaseJob(this);
+        // Destroy prefab
     }
 
     private void Die()

@@ -162,7 +162,7 @@ public class ProductionBuilding: Building
                     tt = Tile.TileTypes.Grass;
                     break;
             }
-            int surroundingTiles = this._tile._neighborTiles.FindAll(t => t._type == tt).Count;
+            int surroundingTiles = this._tile._neighbourTiles.FindAll(t => t._type == tt).Count;
             if (this._maxNeighbors <= surroundingTiles) result = 1f;
             if (this._minNeighbors > surroundingTiles) result = 0f;
             result = (float) surroundingTiles / this._maxNeighbors; 

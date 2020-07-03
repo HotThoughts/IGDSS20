@@ -327,6 +327,7 @@ MonoBehaviour:
   - {fileID: 5044814526144528268, guid: 186da4171193c5c4eb68bc25b23895e5, type: 3}
   - {fileID: 5575372501429904281, guid: 395f4a0356745424993171fc3ab65043, type: 3}
   _selectedBuildingPrefabIndex: 0
+  _placedBuildings: []
   _ResourcesInWarehouse_Fish: 0
   _ResourcesInWarehouse_Wood: 0
   _ResourcesInWarehouse_Planks: 0

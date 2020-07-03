@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     public Texture2D heightMap;
     private int dim;
     public GameObject[] _tilePrefabs;
-    private Tile[,] _tileMap; //2D array of all spawned tiles
+    public Tile[,] _tileMap; //2D array of all spawned tiles
     #endregion
 
     #region Buildings
@@ -129,7 +129,7 @@ public class GameManager : MonoBehaviour
             }
         // Now find neighbours for all tiles
         foreach(Tile t in _tileMap)
-            t._neighborTiles = FindNeighborsOfTile(t);
+            t._neighbourTiles = FindNeighborsOfTile(t);
     }
     //Makes the resource dictionary usable by populating the values and keys
     void PopulateResourceDictionary()
@@ -243,12 +243,20 @@ public class GameManager : MonoBehaviour
                     StartCoroutine(ProductionCycle((ProductionBuilding)b));
                 Debug.Log("Building placed.");
                 // Add to List of all buildings placed
+                UpdatePathFindingMaps(b);
                 _placedBuildings.Add(b);
+                b._pathFindingMap = NavigationManager.GeneratePathMap(t);
             } else
             {
                 Destroy(b);
             }
         }
+    }
+
+    private void UpdatePathFindingMaps(Building b)
+    {
+        foreach(Building _b in _placedBuildings)
+            _b._pathFindingMap[b._tile] += 1;
     }
 
     //Returns a list of all neighbors of a given tile
@@ -309,7 +317,7 @@ public class GameManager : MonoBehaviour
         while(true){
             
             // Update surrounding tiles and compute its current efficiency
-            b._tile._neighborTiles = FindNeighborsOfTile(b._tile);
+            b._tile._neighbourTiles = FindNeighborsOfTile(b._tile);
             b.UpdateEfficiency();
             // skip the production cycle of this building because its efficiency is 0
             if (b._efficiency == 0f)

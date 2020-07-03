@@ -20,6 +20,7 @@ public abstract class Building : MonoBehaviour
     public int _planksCost; // Placement planks cost
     public Tile _tile; // Reference to the tile it is built on 
     public float _efficiency = 0f;
+    public Dictionary<Tile, float> _pathFindingMap;
     #endregion
 
     #region Enumerations
