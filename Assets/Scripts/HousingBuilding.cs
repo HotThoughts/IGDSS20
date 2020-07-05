@@ -10,6 +10,7 @@ public class HousingBuilding : Building {
     public override void InitializeBuilding(int index, Tile t)
     {
         _workers = new List<Worker>();
+        _tile = t;
     }
     private void Awake()
     {
@@ -52,13 +53,20 @@ public class HousingBuilding : Building {
 
         if (obj == null) return;
 
-        Worker w = obj.GetComponent<Worker>() as Worker; 
+        Worker w = obj.GetComponent<Worker>() as Worker;
+        w._workerGameObj = obj;
         w._age = age;
         w._house = this;
         WorkerAssignedToBuilding(w);
 
-        obj.transform.position = transform.position;
-        obj.transform.rotation = transform.rotation;
+        obj.transform.position = _tile.transform.position;
+        obj.transform.rotation = _tile.transform.rotation;
+        // Spawn on random position
+        float randomX = UnityEngine.Random.Range(-3f, 3f);
+        float randomZ = UnityEngine.Random.Range(-3f, 3f);
+
+        obj.transform.position += new Vector3(randomX, 0, randomZ);
+
         obj.SetActive(true);
     }
     // The efficiency should depend on the average happiness of the workers living there. 

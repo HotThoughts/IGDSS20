@@ -136,6 +136,8 @@ public class ProductionBuilding: Building
                 this._jobsCapacity = 50;
                 break;
         }
+        this._jobManager = JobManager.Instance;
+        PopulateJobs();
     }
     // TODO: I am not sure how to compute efficiency. Here is my understanding:
     // Efficiency is the average of

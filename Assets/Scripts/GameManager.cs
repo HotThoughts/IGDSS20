@@ -96,6 +96,9 @@ public class GameManager : MonoBehaviour
     #region Methods
     void GenerateMap()
     {
+        // Locate all tiles in "Tiles" object of scene
+        GameObject tiles = GameObject.Find("Tiles");
+
         _tileMap = new Tile[heightMap.width, heightMap.height];
         for (int i = 0; i < heightMap.height; i++)
             for (int j = 0; j < heightMap.width; j++)
@@ -117,7 +120,7 @@ public class GameManager : MonoBehaviour
                 GameObject tile = Instantiate(_tilePrefabs[typeIndex],
                         new Vector3(i * magicNum, height * 10, j * 10 + bias),
                         new Quaternion(0f, 0f, 0f, 0f));
-                
+                tile.transform.parent = tiles.transform;
                 // Add Tile properties
                 Tile t = tile.AddComponent<Tile>() as Tile;
                 t._type = (Tile.TileTypes) typeIndex+1; // increment typeIndex by 1 since the first item is Empty in TileTypes
@@ -227,15 +230,17 @@ public class GameManager : MonoBehaviour
                 b = gameObject.AddComponent<ProductionBuilding>();
             else
                 b = gameObject.AddComponent<HousingBuilding>();
-            //TODO: check if building can be placed and then istantiate it - DONE
+
             GameObject selectedBuilding = _buildingPrefabs[_selectedBuildingPrefabIndex];
 
             b.InitializeBuilding(_selectedBuildingPrefabIndex, t);
-
+            // Check if building can be placed and then istantiate it
             if (t._building ==  null && b._canBeBuiltOn.Contains(t._type) && _money >= b._moneyCost && _ResourcesInWarehouse_Planks >= b._planksCost)
             {
-                GameObject _building =  Instantiate(selectedBuilding, t.gameObject.transform) as GameObject;
+                GameObject _building = Instantiate(selectedBuilding, t.gameObject.transform) as GameObject;
                 t._building = b;
+                b._tile = t;
+                b._buildingGameObj = _building;
                 // Update money and planks because of the placement
                 _money -= b._moneyCost;
                 _resourcesInWarehouse[ResourceTypes.Planks] -= b._planksCost;

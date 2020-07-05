@@ -115,13 +115,21 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5575372501429904281}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6db8c7622c9f84219aa732a09ee2524d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _jobManager: {fileID: 0}
+  _buildingGameObj: {fileID: 0}
   _workers: []
+  _canBeBuiltOn: 
+  _type: 0
+  _upkeep: 0
+  _moneyCost: 0
+  _planksCost: 0
+  _tile: {fileID: 0}
+  _efficiency: 0
 --- !u!1001 &683548247630417045
 PrefabInstance:
   m_ObjectHideFlags: 0

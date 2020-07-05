@@ -6,6 +6,7 @@ public abstract class Building : MonoBehaviour
 {
     #region Manager References
     public JobManager _jobManager; //Reference to the JobManager
+    public GameObject _buildingGameObj; // Reference to the ingame object
     #endregion
     
     #region Workers

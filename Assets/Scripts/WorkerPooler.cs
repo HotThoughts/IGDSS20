@@ -6,7 +6,7 @@ public class WorkerPooler : MonoBehaviour
 {
     public static WorkerPooler current;
     public GameObject worker;
-    public int pooledAmount = 100;
+    public int pooledAmount = 10;
     public bool willGrow = true;
     List<GameObject> workers;
     void Awake()
@@ -15,7 +15,6 @@ public class WorkerPooler : MonoBehaviour
         workers = new List<GameObject>();
         for (int i = 0; i < pooledAmount; i++)
         {
-            worker = new GameObject();
             GameObject obj = (GameObject)Instantiate(worker);
             obj.AddComponent<Worker>();
             obj.SetActive(false);
