@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class MouseManager : MonoBehaviour
 {
@@ -64,7 +65,7 @@ public class MouseManager : MonoBehaviour
     // print the selected tile type 
     void SelectTile()
     {   // left button
-        if(Input.GetMouseButtonDown(0))
+        if(Input.GetMouseButtonDown(0) && !IsHoverOverUI())
         {
             // print the name of the hitted object
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
@@ -110,5 +111,11 @@ public class MouseManager : MonoBehaviour
             b.Encapsulate(rnds[i].bounds);
         this.bounds = b;
     }
+
+    bool IsHoverOverUI()
+    {
+        return EventSystem.current.IsPointerOverGameObject();
+    }
+    
     #endregion
 }

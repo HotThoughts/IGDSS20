@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Runtime;
 using UnityEngine;
 using UnityEngine.WSA;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -58,6 +59,10 @@ public class GameManager : MonoBehaviour
     private float _ResourcesInWarehouse_Schnapps;
     #endregion
 
+    #region UI
+    public Button button;
+    #endregion
+
     #region Enumerations
     public enum ResourceTypes { None, Fish, Wood, Planks, Wool, Clothes, Potato, Schnapps }; //Enumeration of all available resource types. Can be addressed from other scripts by calling GameManager.ResourceTypes
     #endregion
@@ -83,6 +88,7 @@ public class GameManager : MonoBehaviour
         PopulateResourceDictionary();
         StartCoroutine(TickEconomy());
         //StartCoroutine(ProductionCycle());
+        button.onClick.AddListener(() => UpdateBuildingPrefabIndex(0));
     }
 
     // Update is called once per frame
@@ -133,6 +139,12 @@ public class GameManager : MonoBehaviour
         // Now find neighbours for all tiles
         foreach(Tile t in _tileMap)
             t._neighbourTiles = FindNeighborsOfTile(t);
+    }
+    void HideTileEdges(Tile t)
+    {
+        // TODO: hide individual edges
+
+
     }
     //Makes the resource dictionary usable by populating the values and keys
     void PopulateResourceDictionary()
@@ -344,6 +356,15 @@ public class GameManager : MonoBehaviour
             }
             yield return null;
         }
+    }
+    #endregion
+
+    # region UI
+    public void UpdateBuildingPrefabIndex(int i)
+    {
+        _selectedBuildingPrefabIndex = i;
+        Debug.Log("Button Clicked!");
+        Debug.Log(i.ToString());
     }
     #endregion
 }
