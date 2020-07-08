@@ -74,8 +74,11 @@ public class MouseManager : MonoBehaviour
             if (Physics.Raycast(ray, out hit, 1000f, layerMask))
             {
                 Tile t = hit.collider.gameObject.GetComponent<Tile>() as Tile;
-                Debug.Log("Tile type: " + t._type);
-                gameManager.TileClicked(t._coordinateHeight, t._coordinateWidth);
+                if (t != null)
+                {
+                    Debug.Log("Tile type: " + t._type);
+                    gameManager.TileClicked(t._coordinateHeight, t._coordinateWidth);
+                }
             }
         }
     }

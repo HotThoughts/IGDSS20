@@ -21,6 +21,10 @@ public class UIManager : MonoBehaviour
     public Text gameOver;
     #endregion
 
+    void Awake() {
+        jobManager = JobManager.Instance;
+    }
+
     // Update is called once per frame
     void Update()
     {

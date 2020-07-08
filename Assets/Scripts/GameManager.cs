@@ -85,6 +85,7 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         GenerateMap();
+        jobManager = JobManager.Instance;
     }
 
     // Start is called before the first frame update
