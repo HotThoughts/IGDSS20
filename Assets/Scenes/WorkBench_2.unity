@@ -1079,6 +1079,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 340880843}
+  - component: {fileID: 340880844}
   m_Layer: 8
   m_Name: Tiles
   m_TagString: Untagged
@@ -1100,6 +1101,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &340880844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 340880842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac7f5a86fb7132e42a4f5ba4dd83837b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _type: 0
+  _building: {fileID: 0}
+  _neighbourTiles: []
+  _coordinateHeight: 0
+  _coordinateWidth: 0
 --- !u!1 &377964243
 GameObject:
   m_ObjectHideFlags: 0

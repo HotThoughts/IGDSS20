@@ -153,13 +153,75 @@ public class GameManager : MonoBehaviour
             }
         // Now find neighbours for all tiles
         foreach(Tile t in _tileMap)
+        {
             t._neighbourTiles = FindNeighborsOfTile(t);
+            HideTileEdges(t);
+        }
+        
     }
     void HideTileEdges(Tile t)
     {
         // TODO: hide individual edges
+        Transform baseTile = t.gameObject.transform.Find("BaseTile");
+        List<GameObject> edges = new List<GameObject>();
 
+        foreach (Transform child in baseTile.transform)
+        {
+            if (child.tag == "TileEdges")
+                edges.Add(child.gameObject);
+        }
+        
+        foreach (Tile neighbour in t._neighbourTiles)
+        {
+            if (neighbour._type == t._type) 
+            {   // Find out which edge to hide
+                bool isEven = t._coordinateHeight % 2 == 0;
+                int hideIndex = 0;
+                
+                // check if this neighbour is located at left or right
+                if (neighbour._coordinateHeight == t._coordinateHeight)
+                {
+                    if (neighbour._coordinateWidth < t._coordinateWidth)
+                        hideIndex = 2; // Hide left edge
+                    if (neighbour._coordinateWidth > t._coordinateWidth)
+                        hideIndex = 5; // Hide right edge
+                }
 
+                bool isInsameColumn = neighbour._coordinateWidth == t._coordinateWidth;
+                // check if this neighbour is bottom left or bottom right
+                if (neighbour._coordinateHeight > t._coordinateHeight)
+                {
+                    
+                    if(isEven)
+                    {
+                        if (isInsameColumn) hideIndex = 0;
+                        else hideIndex = 1;
+                    }
+                    else
+                    {
+                        if (isInsameColumn) hideIndex = 1;
+                        else hideIndex = 0;
+                    }
+   
+                }
+                // check if this neighbour is up left or up right
+                if (neighbour._coordinateHeight < t._coordinateHeight)
+                {
+                    if(isEven)
+                    {
+                        if (isInsameColumn) hideIndex = 4;
+                        else hideIndex = 3;
+                    }
+                    else
+                    {
+                        if (isInsameColumn) hideIndex = 3;
+                        else hideIndex = 4;
+                    }
+                }
+                // hide the edge
+                edges[hideIndex].SetActive(false);
+            }
+        }
     }
     //Makes the resource dictionary usable by populating the values and keys
     void PopulateResourceDictionary()
