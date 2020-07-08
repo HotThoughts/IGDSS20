@@ -9,6 +9,7 @@ public class JobManager : MonoBehaviour
     public List<Job> _availableJobs = new List<Job>();
     public List<Worker> _unoccupiedWorkers = new List<Worker>();
     public List<Worker> _currentlyWorking = new List<Worker>();
+    private int numWorkers;
 
     private static JobManager _instance;
     public static JobManager Instance
@@ -101,6 +102,11 @@ public class JobManager : MonoBehaviour
             w._job._worker = null;
             RegisterJob(w._job);
         }
+    }
+    // return the total number of active workers
+    public int GetNumOfWorkers()
+    {
+        return this._unoccupiedWorkers.Count + this._currentlyWorking.Count;
     }
 
     #endregion

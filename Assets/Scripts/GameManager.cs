@@ -5,7 +5,7 @@ using System.Runtime;
 using UnityEngine;
 using UnityEngine.WSA;
 using UnityEngine.UI;
-
+using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
 
@@ -59,10 +59,6 @@ public class GameManager : MonoBehaviour
     private float _ResourcesInWarehouse_Schnapps;
     #endregion
 
-    #region UI
-    public Button button;
-    #endregion
-
     #region Enumerations
     public enum ResourceTypes { None, Fish, Wood, Planks, Wool, Clothes, Potato, Schnapps }; //Enumeration of all available resource types. Can be addressed from other scripts by calling GameManager.ResourceTypes
     #endregion
@@ -72,6 +68,15 @@ public class GameManager : MonoBehaviour
     public int _income = 100; // constant income per economy tick
     private float _economyTickInterval = 60f;
     public int _incomePerWorker = 100;
+    #endregion
+
+    #region UI and Game state
+    public Button button; // building index button
+    public Button restartButton; // Restart button
+    public GameObject EndScreen;
+    public bool GameOver = false;
+    public JobManager jobManager;
+    public String gameOverText = "Game Over";
     #endregion
 
     #region MonoBehaviour
@@ -89,6 +94,8 @@ public class GameManager : MonoBehaviour
         StartCoroutine(TickEconomy());
         //StartCoroutine(ProductionCycle());
         button.onClick.AddListener(() => UpdateBuildingPrefabIndex(0));
+        restartButton.onClick.AddListener(Restart);
+        EndScreen.SetActive(false);
     }
 
     // Update is called once per frame
@@ -96,6 +103,14 @@ public class GameManager : MonoBehaviour
     {
         HandleKeyboardInput();
         UpdateInspectorNumbersForResources();
+        DoesWin();
+    }
+    #endregion
+
+    #region SceneManagement
+    void Restart()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     #endregion
 
@@ -359,12 +374,41 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
-    # region UI
+    #region UI
     public void UpdateBuildingPrefabIndex(int i)
     {
         _selectedBuildingPrefabIndex = i;
-        Debug.Log("Button Clicked!");
-        Debug.Log(i.ToString());
+        Debug.Log(String.Format("Button Clicked. Selected building index: {0} ", i));
+        //Debug.Log(i.ToString());
+    }
+    #endregion
+
+    #region GameState
+    public void DoesWin()
+    {
+        bool bankrupted = this._money == 0f;
+        bool tooRich = this._money >= 1000000f;
+        bool enoughPopulation = jobManager.GetNumOfWorkers() >= 1000;
+
+        if (bankrupted)
+        {
+            EndGame();
+            this.gameOverText = "You Bankrupted!";
+        }
+        else if (tooRich || enoughPopulation)
+        {
+            EndGame();
+            this.gameOverText = "You Win!";
+        }
+    }
+    public void EndGame()
+    {
+        if (GameOver == false)
+        {
+            GameOver = true;
+            EndScreen.SetActive(true);
+            Debug.Log("Game has ended.");
+        }
     }
     #endregion
 }

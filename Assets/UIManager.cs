@@ -18,15 +18,14 @@ public class UIManager : MonoBehaviour
     public Text clothes;
     public Text potato;
     public Text schnapps;
+    public Text gameOver;
     #endregion
 
     // Update is called once per frame
     void Update()
     {
         money.text = gameManager._money.ToString();
-        
-        int numWorkers = jobManager._unoccupiedWorkers.Count + jobManager._currentlyWorking.Count;
-        workers.text = numWorkers.ToString();
+        workers.text = jobManager.GetNumOfWorkers().ToString();
 
         fish.text = gameManager._resourcesInWarehouse[GameManager.ResourceTypes.Fish].ToString();
         wood.text = gameManager._resourcesInWarehouse[GameManager.ResourceTypes.Wood].ToString();
@@ -35,5 +34,7 @@ public class UIManager : MonoBehaviour
         clothes.text = gameManager._resourcesInWarehouse[GameManager.ResourceTypes.Clothes].ToString();
         potato.text = gameManager._resourcesInWarehouse[GameManager.ResourceTypes.Potato].ToString();
         schnapps.text = gameManager._resourcesInWarehouse[GameManager.ResourceTypes.Schnapps].ToString();
+
+        gameOver.text = gameManager.gameOverText;
     }
 }
